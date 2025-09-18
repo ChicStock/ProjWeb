@@ -1,0 +1,23 @@
+import './cadastro.css'
+import './assets/Logo1.png'
+
+function Cadastro() {
+  return (
+    <header id="Pagina">
+      <h1>Vamos realizar seu cadastro:</h1>
+      <nav>
+        <img src={Logo1} />
+      </nav>
+      <div className="menu">
+        <input type="text" placeholder="Digite seu nome completo..." />
+        <input type="email" placeholder="Digite seu email..." />
+        <input type="password" placeholder='digite sua senha...' />
+        <input type="CPF" placeholder='digite seu CPF...' />
+        <input type="tel" placeholder="Digite seu número de telefone..." />
+        <button>Cadastrar</button>
+      </div>
+    </header>
+  );
+}
+
+export default Cadastro;

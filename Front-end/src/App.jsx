@@ -1,11 +1,11 @@
 import './App.css'
-import NavbarCliente from './componentes/NavBar'
+import Cadastro from './pages/Tela de cadastro/cadastro'
 
 function App() {
 
   return (
     <>
-     <NavbarCliente/> 
+     <Cadastro/> 
     </>
   )
 }
