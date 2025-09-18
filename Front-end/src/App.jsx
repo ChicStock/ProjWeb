@@ -1,5 +1,5 @@
 import './App.css'
-import Cadastro from './pages/Tela de cadastro/cadastro'
+import Cadastro from './pages/cadastro'
 
 function App() {
 

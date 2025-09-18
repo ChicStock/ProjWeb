@@ -1,13 +1,13 @@
 import './cadastro.css'
-import './assets/Logo1.png'
+import Logo1 from '../assets/Logo1.png'
 
 function Cadastro() {
   return (
     <header id="Pagina">
-      <h1>Vamos realizar seu cadastro:</h1>
       <nav>
-        <img src={Logo1} />
+        <img src={Logo1} className='logo1' />
       </nav>
+      <h1>Vamos realizar seu cadastro:</h1>
       <div className="menu">
         <input type="text" placeholder="Digite seu nome completo..." />
         <input type="email" placeholder="Digite seu email..." />
