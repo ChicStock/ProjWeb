@@ -4,6 +4,7 @@ import com.example.demo.model.StatusUsuario;
 import com.example.demo.model.UsuarioModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
@@ -11,7 +12,10 @@ import java.util.Optional;
 @Repository
 public interface UsuarioRepository extends JpaRepository<UsuarioModel, Long> {
 
-    Optional<UsuarioModel> findByEmail(String email);
+    UserDetails findByNome(String nome);
+
+    UserDetails findByEmail(String email);
+
     Optional<UsuarioModel> findByCpf(String cpf);
 
     boolean existsByEmail(String email);

@@ -22,4 +22,9 @@ server:
 
 logging:
   level:
-    com.exemplo.ecommerce: DEBUG
+    com.example.demo: DEBUG
+
+api:
+  security:
+    token:
+      secret: ${JWT_SECRET:my-super-secret-jwt-key-that-is-at-least-256-bits-long-123456}

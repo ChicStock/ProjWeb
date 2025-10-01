@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,13 +50,13 @@ public class UsuarioController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/email/{email}")
-    @Operation(summary = "Buscar usuário por email")
-    public ResponseEntity<UsuarioResponseDTO> buscarPorEmail(@PathVariable String email) {
-        Optional<UsuarioResponseDTO> usuario = usuarioService.buscarPorEmail(email);
-        return usuario.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
+//    @GetMapping("/email/{email}")
+//    @Operation(summary = "Buscar usuário por email")
+//    public ResponseEntity<UsuarioResponseDTO> buscarPorEmail(@PathVariable String email) {
+//        Optional<UsuarioResponseDTO> usuario = usuarioService.buscarPorEmail(email);
+//        return usuario.map(ResponseEntity::ok)
+//                .orElse(ResponseEntity.notFound().build());
+//    }
 
     @PatchMapping("/{id}")
     @Operation(summary = "Atualizar usuário parcialmente")

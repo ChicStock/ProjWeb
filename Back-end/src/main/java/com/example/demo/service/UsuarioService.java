@@ -7,6 +7,7 @@ import com.example.demo.exception.DuplicateResourceException; // Corrigido o imp
 import com.example.demo.model.UsuarioModel;
 import com.example.demo.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,10 +56,10 @@ public class UsuarioService {
                 .map(usuario -> modelMapper.map(usuario, UsuarioResponseDTO.class));
     }
 
-    public Optional<UsuarioResponseDTO> buscarPorEmail(String email) {
-        return usuarioRepository.findByEmail(email)
-                .map(usuario -> modelMapper.map(usuario, UsuarioResponseDTO.class));
-    }
+//    public Optional<UsuarioResponseDTO> buscarPorEmail(String email) {
+//        return usuarioRepository.findByEmail(email)
+//                .map(usuario -> modelMapper.map(usuario, UsuarioResponseDTO.class));
+//    }
 
     @Transactional
     public Optional<UsuarioResponseDTO> atualizarParcialmente(Long id, UsuarioUpdateDTO updateDTO) {
