@@ -151,3 +151,49 @@ html, body {
   color: #333;
   margin: 5px 0 0;
 }
+
+.container-tabela-vendas {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+}
+
+.tabela-vendas {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.tabela-vendas th, .tabela-vendas td {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  font-size: 0.9em;
+}
+
+.tabela-vendas th {
+  background-color: #f8f8f8;
+  color: #666;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.tabela-vendas td {
+  color: #555;
+  vertical-align: top;
+}
+
+.tabela-vendas tr:hover {
+  background-color: #fbfbfb;
+}
+
+.tabela-vendas td:first-child {
+  font-size: 0.8em;
+  color: #888;
+}
+
+.tabela-vendas td small {
+  display: block;
+  font-size: 0.8em;
+  color: #aaa;
+}
