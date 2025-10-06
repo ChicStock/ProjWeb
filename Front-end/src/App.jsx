@@ -1,13 +1,11 @@
 import './App.css'
-import Navbar from './components/NavBar.jsx'
-import Cadastro from './pages/cadastro.jsx'
-import Login from './pages/login.jsx'
+import RelatorioVendas from './pages/RelatorioVendas'
 
 function App() {
 
   return (
     <>
-     <Navbar/> 
+     <RelatorioVendas/> 
     </>
   )
 }
