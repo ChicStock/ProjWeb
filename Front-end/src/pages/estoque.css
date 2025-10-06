@@ -1,0 +1,100 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f0ede8;
+}
+
+.container-principal {
+  padding: 20px;
+  min-height: 100vh;
+}
+
+.cabecalho-estoque {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.titulo-estoque {
+  display: flex;
+  align-items: center;
+}
+
+.icone-voltar {
+  width: 24px;
+  height: 24px;
+  margin-right: 15px;
+  cursor: pointer;
+}
+
+.cabecalho-estoque h1 {
+  font-size: 1.5em;
+  font-weight: normal;
+  color: #333;
+  margin: 0;
+}
+
+.logo-estoque img {
+  width: 150px;
+  height: auto;
+}
+
+.grid-estoque {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  padding: 10px;
+  background-color: #d1c1b1;
+  border-radius: 8px;
+}
+
+.card-produto {
+  background-color: #a39587;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  color: #fff;
+}
+
+.cabecalho-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+
+.cabecalho-card h3 {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin: 0;
+}
+
+.imagem-produto {
+  width: 60px;
+  height: auto;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.tabela-estoque {
+  width: 100%;
+  border-collapse: collapse;
+  color: #fff;
+}
+
+.tabela-estoque th, .tabela-estoque td {
+  padding: 8px 0;
+  text-align: left;
+}
+
+.tabela-estoque th {
+  font-weight: normal;
+  color: rgba(255, 255, 255, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.tabela-estoque td {
+  font-weight: bold;
+}
