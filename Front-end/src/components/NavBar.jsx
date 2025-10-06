@@ -1,16 +1,21 @@
 import "./Navbar.css"; 
-import Logo1 from "../assets/Logo1.png"   
+import Logo2 from "../assets/Logo2.png"   
 import { BsBag } from "react-icons/bs";
+import { IoMdSearch } from "react-icons/io";
 import { FiChevronDown } from "react-icons/fi";
-import { NavDropdown } from "react-bootstrap"; 
+import { Dropdown, NavDropdown } from "react-bootstrap"; 
+
 
 
 function Navbar() {
+
   return (
-    <header className="navbar">
+    <header className="navbar"> 
       <div className="navbar-top">
-        <img src={Logo1} className="logo1"/>
-  
+        <div className="logo-container">
+        <img src={Logo2} alt="Logo" className="logo2" />
+        </div>
+          
         <div className="search-bar">
           <input
             type="text"
@@ -18,6 +23,7 @@ function Navbar() {
           />
           <button>
             <i className="fas fa-search"></i>
+            <IoMdSearch/>
           </button>
         </div>
 
@@ -27,17 +33,19 @@ function Navbar() {
           </span>
 
             <NavDropdown
-             title={<FiChevronDown size={20} />}
-             id="basic-nav-dropdown"
-             className="user-dropdown"
-             >
-             <NavDropdown.Item href="#action/3.1">Perfil</NavDropdown.Item>
-             <NavDropdown.Item href="#action/3.2">Meus Pedidos</NavDropdown.Item>
-             <NavDropdown.Item href="#action/3.3">Cadastre sua loja</NavDropdown.Item>
-             <NavDropdown.Divider />
-             <NavDropdown.Item href="#action/3.4">Sair</NavDropdown.Item>
-             </NavDropdown>
-
+            title={<FiChevronDown size={20} color="#000"/>}
+            id="basic-nav-dropdown"
+            className="user-dropdown"
+            rootClose
+            >
+              <NavDropdown.Item href="#action/3.1">Perfil</NavDropdown.Item>
+              <NavDropdown.Item href="#action/3.2">Meus Pedidos</NavDropdown.Item>
+              <NavDropdown.Item href="#action/3.3">Cadastre sua loja</NavDropdown.Item>
+              <NavDropdown.Divider />
+              <NavDropdown.Item href="#action/3.4">Sair</NavDropdown.Item>
+              
+            </NavDropdown>
+             
           <BsBag />
 
         </div>
