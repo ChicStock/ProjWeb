@@ -22,6 +22,14 @@ public class UsuarioModel {
     @Column(unique = true, nullable = false)
     private String email;
 
+    @Column(unique = true, nullable = false, length = 15)
+    private String telefone;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private StatusUsuario status = StatusUsuario.ATIVO;
+
+    @Column(unique = true, nullable = false, length = 11)
     @Column(unique = true, nullable = false)
     private String telefone;
 
@@ -31,6 +39,9 @@ public class UsuarioModel {
     @Column(nullable = false)
     private String senha;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "endereco_id")
+    private EnderecoModel endereco;
     @OneToOne
     @JoinColumn(name = "endereco_id")
     private EnderecoModel endereco;
