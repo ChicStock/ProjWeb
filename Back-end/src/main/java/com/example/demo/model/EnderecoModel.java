@@ -13,6 +13,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "tb_endereco")
 public class EnderecoModel {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

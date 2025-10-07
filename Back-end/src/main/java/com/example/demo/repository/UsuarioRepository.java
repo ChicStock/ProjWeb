@@ -30,4 +30,6 @@ public interface UsuarioRepository extends JpaRepository<UsuarioModel, Long> {
     // Ou se você quiser manter mais campos:
     // @Query("SELECT u FROM UsuarioModel u WHERE u.nome LIKE :termo OR u.email LIKE :termo OR u.cpf LIKE :termo")
     // List<UsuarioModel> findByTermo(@Param("termo") String termo);
+
+public interface UsuarioRepository extends JpaRepository<UsuarioModel, Long> {
 }
