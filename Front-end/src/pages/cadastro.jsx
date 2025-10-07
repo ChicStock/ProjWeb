@@ -4,8 +4,8 @@ import Logo1 from '../assets/Logo1.png'
 function Cadastro() {
   return (
     <header id="Pagina">
-      <nav>
-        <img src={Logo1} className='logo1' />
+      <nav className="navbar">
+        <img src={Logo1} className="logo1" />
       </nav>
       <h1>Vamos realizar seu cadastro:</h1>
       <div className="menu">

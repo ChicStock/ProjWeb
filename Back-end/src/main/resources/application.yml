@@ -28,3 +28,4 @@ api:
   security:
     token:
       secret: ${JWT_SECRET:my-super-secret-jwt-key-that-is-at-least-256-bits-long-123456}
+    com.exemplo.ecommerce: DEBUG

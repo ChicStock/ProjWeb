@@ -37,6 +37,14 @@ public class UsuarioModel implements UserDetails {
     private StatusUsuario status = StatusUsuario.ATIVO;
 
     @Column(unique = true, nullable = false, length = 11)
+    @Column(unique = true, nullable = false)
+    private String telefone;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private StatusUsuario status = StatusUsuario.ATIVO;
+
+    @Column(unique = true, nullable = false, length = 11)
     private String cpf;
 
     @Column(nullable = false)
@@ -45,6 +53,10 @@ public class UsuarioModel implements UserDetails {
     private UserRole role;
 
     @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "endereco_id")
+    private EnderecoModel endereco;
+    @OneToOne
     @JoinColumn(name = "endereco_id")
     private EnderecoModel endereco;
 
