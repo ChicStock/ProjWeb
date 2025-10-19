@@ -20,7 +20,6 @@ function TelaInicial() {
       <Navbar />
 
       <Carousel fade interval={3000} className="carousel-principal">
-
         <Carousel.Item>
           <img className="d-block w-100" src={Loja4} alt="Loja 4" />
         </Carousel.Item>
@@ -36,7 +35,6 @@ function TelaInicial() {
         <Carousel.Item>
           <img className="d-block w-100" src={ChicStock} alt="ChicStock" />
         </Carousel.Item>
-
       </Carousel>
 
     
@@ -55,7 +53,6 @@ function TelaInicial() {
           <Col md={4}>
             <img src={Loja3} alt="Loja 3" className="img-fluid rounded shadow" />
           </Col>
-
         </Row>
       </Container>
 
