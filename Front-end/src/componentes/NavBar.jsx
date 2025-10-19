@@ -2,8 +2,7 @@ import "./Navbar.css";
 import Logo2 from "../assets/Logo2.png"   
 import { BsBag } from "react-icons/bs";
 import { IoMdSearch } from "react-icons/io";
-import { FiChevronDown } from "react-icons/fi";
-import { Dropdown, NavDropdown } from "react-bootstrap"; 
+import { NavDropdown } from "react-bootstrap"; 
 
 
 
@@ -33,7 +32,6 @@ function Navbar() {
           </span>
 
             <NavDropdown
-            title={<FiChevronDown size={20} color="#000"/>}
             id="basic-nav-dropdown"
             className="user-dropdown"
             rootClose
