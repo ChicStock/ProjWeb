@@ -17,28 +17,6 @@ import java.util.Optional;
 @Repository
 public interface UsuarioRepository extends JpaRepository<UsuarioModel, Long> {
 
-    Optional<UsuarioModel> findByEmail(String email);
-    Optional<UsuarioModel> findByCpf(String cpf);
-    Optional<UsuarioModel> findByTelefone(String telefone);
-
-    boolean existsByEmail(String email);
-    boolean existsByCpf(String cpf);
-    boolean existsByTelefone(String telefone);
-    boolean existsByTelefoneAndIdNot(String telefone, Long id);
-    boolean existsByEmailAndIdNot(String email, Long id);
-    boolean existsByCpfAndIdNot(String cpf, Long id);
-
-    // CORRIGIR ESTA QUERY - REMOVER O SOBRENOME
-    @Query("SELECT u FROM UsuarioModel u WHERE u.nome LIKE :termo OR u.email LIKE :termo")
-    List<UsuarioModel> findByTermo(@Param("termo") String termo);
-
-    // Ou se você quiser manter mais campos:
-    // @Query("SELECT u FROM UsuarioModel u WHERE u.nome LIKE :termo OR u.email LIKE :termo OR u.cpf LIKE :termo")
-    // List<UsuarioModel> findByTermo(@Param("termo") String termo);
-
-@Repository
-public interface UsuarioRepository extends JpaRepository<UsuarioModel, Long> {
-
     UserDetails findByNome(String nome);
 
     UserDetails findByEmail(String email);
