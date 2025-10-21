@@ -5,7 +5,6 @@ import { IoMdSearch } from "react-icons/io";
 import { NavDropdown } from "react-bootstrap"; 
 
 
-
 function Navbar() {
 
   return (
