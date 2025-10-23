@@ -1,5 +1,6 @@
 import React from 'react';
 import './RelatorioVendas.css';
+import logo from '../assets/logo2teste.png'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const dadosVendas = [
@@ -52,7 +53,7 @@ const RelatorioVendas = () => {
     <div className="container-principal">
       <header className="cabecalho">
         <div className="logo">
-          <img src="/path/to/your/logo.png" alt="Chic Stock" />
+          <img src={logo} alt="Chic Stock" />
           <div className="texto-logo">
             <span>Chic Stock</span>
             <small>Atacado de Moda</small>
