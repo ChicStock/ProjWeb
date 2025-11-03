@@ -8,12 +8,15 @@ import RelatorioVendas from './pages/RelatorioVendas';
 import Login from './pages/login';
 import Estoque from './pages/Estoque';
 import TelaProduto from './componentes/TelaProduto';
+import MeusPedidos from './componentes/MeusPedidos'
+import FinalizePedido from './componentes/FinalizarPedido';
+import FinalizarPedido from './componentes/FinalizarPedido';
 
 function App() {
 
   return (
     <>
-    <TelaProduto/>
+    <FinalizarPedido/>
     </>
   )
 }
