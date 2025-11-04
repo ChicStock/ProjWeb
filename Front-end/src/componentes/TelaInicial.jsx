@@ -17,7 +17,7 @@ import Cadastre from "../assets/Cadastre.png";
 function TelaInicial() {
   return (
     <>
-      <Navbar />
+      <Navbar/>
 
       <Carousel fade interval={3000} className="carousel-principal">
         <Carousel.Item>
