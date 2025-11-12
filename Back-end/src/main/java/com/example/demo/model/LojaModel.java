@@ -50,7 +50,10 @@ public class LojaModel {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // Relacionamento bidirecional com Produto
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private UsuarioModel usuario;
+
     @OneToMany(mappedBy = "loja", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ProdutoModel> produtos;
 }
