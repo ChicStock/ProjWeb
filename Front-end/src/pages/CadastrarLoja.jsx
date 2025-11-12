@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom'; // Para ler o ID da URL
-import './PersonalizarLoja.css'; // O CSS completo
-import { FiEdit2, FiCheck } from 'react-icons/fi'; // Importar o ícone de Salvar
-import logoLojaPadrao from '../assets/loja2.png'; // Renomeado para 'padrao'
+import { useParams, useNavigate } from 'react-router-dom';
+import './PersonalizarLoja.css';
+import { FiEdit2, FiCheck } from 'react-icons/fi';
+import logoLojaPadrao from '../assets/loja2.png';
 import logosite from '../assets/logo2teste.png';
 // import axios from 'axios'; // (Para quando o back-end estiver pronto)
 
-// Dados iniciais (simulando o que viria do back-end)
-// Usamos os dados que você tinha no HTML estático
 const dadosIniciaisDaLoja = {
   nome: 'Max Maize',
   descricao: 'Jeans de verdade, estilo sem limites.',
@@ -33,18 +31,17 @@ const dadosIniciaisDaLoja = {
 
 
 const PersonalizarLoja = () => {
-  // 1. LER O ID DA LOJA (que veio do CadastrarLoja)
   const { id } = useParams();
+  const navigate = useNavigate();
   
-  // 2. ESTADOS
+  // 3. ESTADOS
   const [lojaData, setLojaData] = useState(dadosIniciaisDaLoja);
-  const [editando, setEditando] = useState(null); // Controla qual campo está em edição (ex: 'nome', 'endereco')
+  const [editando, setEditando] = useState(null);
   const [fotoPreview, setFotoPreview] = useState(logoLojaPadrao);
-  const fileInputRef = useRef(null); // Referência para o input de arquivo escondido
+  const fileInputRef = useRef(null);
 
-  // 3. EFEITO PARA BUSCAR DADOS (SIMULADO)
   useEffect(() => {
-    // Quando o back-end funcionar, você fará a chamada GET aqui
+    // Quando o back-end funcionar, fará a chamada GET aqui
     // const fetchLojaData = async () => {
     //   const response = await axios.get(`http://localhost:8080/api/lojas/${id}`);
     //   setLojaData(response.data);
@@ -54,19 +51,14 @@ const PersonalizarLoja = () => {
     
     // Por enquanto, apenas logamos o ID que recebemos
     console.log("Personalizando a loja com ID (simulado):", id);
-    // E usamos os dados 'nome' e 'descricao' que (teoricamente) vieram do cadastro
-    // Se você passou os dados via `Maps`, pode pegá-los com `useLocation()`
+
     
   }, [id]);
 
-  // 4. HANDLERS (Funções de lógica)
-
-  // Função genérica para campos simples (nome, descricao, entrega, pagamento)
   const handleFieldChange = (field, value) => {
     setLojaData(prev => ({ ...prev, [field]: value }));
   };
 
-  // Função para campos aninhados (endereco, horario, contato)
   const handleNestedChange = (group, field, value) => {
     setLojaData(prev => ({
       ...prev,
@@ -77,7 +69,6 @@ const PersonalizarLoja = () => {
     }));
   };
 
-  // Função para o botão "Salvar" principal (simulado)
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log('Salvando todos os dados...', lojaData);
@@ -89,12 +80,14 @@ const PersonalizarLoja = () => {
     //   alert('Erro ao salvar. Tente novamente.');
     // }
     alert('Loja salva com sucesso! (Simulado)');
+    
+    navigate('/RelatorioVendas');
   };
 
   // --- Lógica da Foto ---
   const handleFotoClick = (e) => {
-    e.preventDefault(); // Impede o link <a> de navegar
-    fileInputRef.current.click(); // Clica no input de arquivo escondido
+    e.preventDefault();
+    fileInputRef.current.click();
   };
 
   const handleFotoChange = (e) => {
@@ -102,7 +95,7 @@ const PersonalizarLoja = () => {
     if (file) {
       // Cria uma URL local para o preview da imagem
       setFotoPreview(URL.createObjectURL(file));
-      // No futuro, você enviará esse 'file' para o back-end
+      // No futuro, enviará esse 'file' para o back-end
       // const formData = new FormData();
       // formData.append('imagemLogo', file);
       // axios.post(`/api/lojas/${id}/upload-logo`, formData);
@@ -112,7 +105,6 @@ const PersonalizarLoja = () => {
 
   return (
     <div className="personalizacao-wrapper">
-      {/* Input de arquivo escondido */}
       <input 
         type="file"
         ref={fileInputRef}
@@ -125,13 +117,10 @@ const PersonalizarLoja = () => {
         <img src={logosite} alt="Logo Site"/>
       </div>
 
-      {/* 5. Transformar o container em um formulário */}
       <form className="personalizacao-container" onSubmit={handleSubmit}>
         
-        {/* --- Coluna Esquerda --- */}
         <div className="coluna-esquerda">
           <div className="perfil-foto-container">
-            {/* O 'src' agora é o 'fotoPreview' do estado */}
             <img src={fotoPreview} alt="Logo da Loja" className="perfil-foto" />
             {/* O 'href' foi trocado por 'onClick' */}
             <a href="#" onClick={handleFotoClick} className="alterar-foto-link">
@@ -139,7 +128,6 @@ const PersonalizarLoja = () => {
             </a>
           </div>
 
-          {/* --- Campo Endereço (Exemplo complexo) --- */}
           <div className="campo-container">
             <label>Endereço:</label>
             {editando === 'endereco' ? (
@@ -152,7 +140,6 @@ const PersonalizarLoja = () => {
                 <FiCheck className="save-icon" onClick={() => setEditando(null)} />
               </div>
             ) : (
-              // Modo de Visualização
               <div className="campo-editavel">
                 <div className="multi-line">
                   <p>{lojaData.endereco.rua}</p>
@@ -165,7 +152,6 @@ const PersonalizarLoja = () => {
             )}
           </div>
 
-          {/* --- Campo Entrega (Exemplo simples) --- */}
           <div className="campo-container">
             <label>Entrega:</label>
             {editando === 'entrega' ? (
@@ -182,10 +168,8 @@ const PersonalizarLoja = () => {
           </div>
         </div>
 
-        {/* --- Coluna Direita --- */}
         <div className="coluna-direita">
           
-          {/* --- Campo Nome (Exemplo simples) --- */}
           <div className="campo-container">
             <label>Nome:</label>
             {editando === 'nome' ? (
@@ -203,7 +187,6 @@ const PersonalizarLoja = () => {
             )}
           </div>
 
-          {/* --- Campo Descrição (Exemplo simples com textarea) --- */}
           <div className="campo-container">
             <label>Descrição:</label>
             {editando === 'descricao' ? (
@@ -219,7 +202,6 @@ const PersonalizarLoja = () => {
             )}
           </div>
 
-          {/* --- Campo Horário (Exemplo complexo) --- */}
           <div className="campo-container">
             <label>Horário de Funcionamento:</label>
             {editando === 'horario' ? (
@@ -241,7 +223,6 @@ const PersonalizarLoja = () => {
             )}
           </div>
 
-          {/* --- Campo Contato (Exemplo complexo) --- */}
           <div className="campo-container">
             <label>Contato:</label>
             {editando === 'contato' ? (
@@ -263,7 +244,6 @@ const PersonalizarLoja = () => {
             )}
           </div>
 
-          {/* --- Campo Pagamento (Exemplo simples) --- */}
           <div className="campo-container">
             <label>Formas de pagamento:</label>
             {editando === 'pagamento' ? (
@@ -280,7 +260,6 @@ const PersonalizarLoja = () => {
           </div>
 
           <div className="rodape-acoes">
-            {/* O botão agora é type="submit" para o formulário */}
             <button type="submit" className="btn-salvar">Salvar Alterações</button>
           </div>
         </div>
