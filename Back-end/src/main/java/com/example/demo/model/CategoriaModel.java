@@ -44,7 +44,6 @@ public class CategoriaModel {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // Relacionamento bidirecional com Produto
     @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ProdutoModel> produtos;
 }

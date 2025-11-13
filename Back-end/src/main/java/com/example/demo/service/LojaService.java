@@ -1,15 +1,20 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.*;
-import com.example.demo.exception.*;
-import com.example.demo.model.*;
+import com.example.demo.dto.LojaRequestDTO;
+import com.example.demo.dto.LojaResponseDTO;
+import com.example.demo.model.LojaModel;
+import com.example.demo.model.StatusLoja;
+import com.example.demo.model.UsuarioModel;
+import com.example.demo.model.enums.UserRole;
 import com.example.demo.repository.LojaRepository;
+import com.example.demo.repository.UsuarioRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.modelmapper.ModelMapper;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,85 +22,45 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class LojaService {
 
     private final LojaRepository lojaRepository;
-    private final ModelMapper modelMapper;
+    private final UsuarioRepository usuarioRepository;
 
     @Transactional
     public LojaResponseDTO criarLoja(LojaRequestDTO requestDTO) {
-        // Validar CNPJ único
-        if (requestDTO.getCnpj() != null && lojaRepository.existsByCnpj(requestDTO.getCnpj())) {
-            throw new DuplicateResourceException("CNPJ já cadastrado: " + requestDTO.getCnpj());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        UsuarioModel usuario = usuarioRepository.findByEmail(email);
+
+        if (usuario == null) {
+            throw new EntityNotFoundException("Usuário não encontrado.");
         }
 
-        LojaModel loja = modelMapper.map(requestDTO, LojaModel.class);
+        if (usuario.getLoja() != null) {
+            throw new IllegalStateException("Usuário já possui uma loja vinculada.");
+        }
+
+        if (lojaRepository.existsByCnpj(requestDTO.getCnpj())) {
+            throw new IllegalArgumentException("CNPJ já cadastrado.");
+        }
+
+        LojaModel loja = new LojaModel();
+        loja.setNome(requestDTO.getNome());
+        loja.setEndereco(requestDTO.getEndereco());
+        loja.setTelefone(requestDTO.getTelefone());
+        loja.setCnpj(requestDTO.getCnpj());
         loja.setStatusLoja(StatusLoja.ATIVO);
+        loja.setUsuario(usuario);
 
-        LojaModel lojaSalva = lojaRepository.save(loja);
-        log.info("Loja criada com sucesso: ID={}, Nome={}", lojaSalva.getId(), lojaSalva.getNome());
+        usuario.setRole(UserRole.LOJISTA);
+        usuario.setLoja(loja);
 
-        return convertToResponseDTO(lojaSalva);
-    }
-
-    public List<LojaResponseDTO> listarTodasAtivas() {
-        Sort sort = Sort.by(Sort.Order.asc("nome"));
-        return lojaRepository.findLojasAtivas(sort)
-                .stream()
-                .map(this::convertToResponseDTO)
-                .collect(Collectors.toList());
-    }
-
-    public Optional<LojaResponseDTO> buscarPorId(Long id) {
-        return lojaRepository.findById(id)
-                .map(this::convertToResponseDTO);
-    }
-
-    @Transactional
-    public Optional<LojaResponseDTO> atualizarLoja(Long id, LojaRequestDTO requestDTO) {
-        Optional<LojaModel> optionalLoja = lojaRepository.findById(id);
-
-        if (optionalLoja.isEmpty()) {
-            return Optional.empty();
-        }
-
-        LojaModel lojaExistente = optionalLoja.get();
-
-        // Validar CNPJ único
-        if (requestDTO.getCnpj() != null &&
-                !requestDTO.getCnpj().equals(lojaExistente.getCnpj()) &&
-                lojaRepository.existsByCnpjAndIdNot(requestDTO.getCnpj(), id)) {
-            throw new DuplicateResourceException("CNPJ já cadastrado: " + requestDTO.getCnpj());
-        }
-
-        lojaExistente.setNome(requestDTO.getNome());
-        lojaExistente.setEndereco(requestDTO.getEndereco());
-        lojaExistente.setTelefone(requestDTO.getTelefone());
-        lojaExistente.setCnpj(requestDTO.getCnpj());
-
-        LojaModel lojaAtualizada = lojaRepository.save(lojaExistente);
-        return Optional.of(convertToResponseDTO(lojaAtualizada));
-    }
-
-    @Transactional
-    public boolean desativarLoja(Long id) {
-        Optional<LojaModel> optionalLoja = lojaRepository.findById(id);
-
-        if (optionalLoja.isEmpty()) {
-            return false;
-        }
-
-        LojaModel loja = optionalLoja.get();
-        loja.setStatusLoja(StatusLoja.INATIVO);
         lojaRepository.save(loja);
+        usuarioRepository.save(usuario);
 
-        log.info("Loja desativada: ID={}, Nome={}", id, loja.getNome());
-        return true;
-    }
-
-    private LojaResponseDTO convertToResponseDTO(LojaModel loja) {
-        LojaResponseDTO dto = LojaResponseDTO.builder()
+        return LojaResponseDTO.builder()
                 .id(loja.getId())
                 .nome(loja.getNome())
                 .endereco(loja.getEndereco())
@@ -106,6 +71,71 @@ public class LojaService {
                 .updatedAt(loja.getUpdatedAt())
                 .totalProdutos(lojaRepository.countProdutosByLojaId(loja.getId()))
                 .build();
-        return dto;
+    }
+
+    public List<LojaResponseDTO> listarTodasAtivas() {
+        return lojaRepository.findLojasAtivas(Sort.by("nome")).stream()
+                .map(loja -> LojaResponseDTO.builder()
+                        .id(loja.getId())
+                        .nome(loja.getNome())
+                        .endereco(loja.getEndereco())
+                        .telefone(loja.getTelefone())
+                        .cnpj(loja.getCnpj())
+                        .status(loja.getStatusLoja())
+                        .createdAt(loja.getCreatedAt())
+                        .updatedAt(loja.getUpdatedAt())
+                        .totalProdutos(lojaRepository.countProdutosByLojaId(loja.getId()))
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    public Optional<LojaResponseDTO> buscarPorId(Long id) {
+        return lojaRepository.findById(id)
+                .map(loja -> LojaResponseDTO.builder()
+                        .id(loja.getId())
+                        .nome(loja.getNome())
+                        .endereco(loja.getEndereco())
+                        .telefone(loja.getTelefone())
+                        .cnpj(loja.getCnpj())
+                        .status(loja.getStatusLoja())
+                        .createdAt(loja.getCreatedAt())
+                        .updatedAt(loja.getUpdatedAt())
+                        .totalProdutos(lojaRepository.countProdutosByLojaId(loja.getId()))
+                        .build());
+    }
+
+    @Transactional
+    public Optional<LojaResponseDTO> atualizarLoja(Long id, LojaRequestDTO requestDTO) {
+        return lojaRepository.findById(id).map(loja -> {
+            loja.setNome(requestDTO.getNome());
+            loja.setEndereco(requestDTO.getEndereco());
+            loja.setTelefone(requestDTO.getTelefone());
+            loja.setCnpj(requestDTO.getCnpj());
+            lojaRepository.save(loja);
+
+            return LojaResponseDTO.builder()
+                    .id(loja.getId())
+                    .nome(loja.getNome())
+                    .endereco(loja.getEndereco())
+                    .telefone(loja.getTelefone())
+                    .cnpj(loja.getCnpj())
+                    .status(loja.getStatusLoja())
+                    .createdAt(loja.getCreatedAt())
+                    .updatedAt(loja.getUpdatedAt())
+                    .totalProdutos(lojaRepository.countProdutosByLojaId(loja.getId()))
+                    .build();
+        });
+    }
+
+    @Transactional
+    public boolean desativarLoja(Long id) {
+        Optional<LojaModel> lojaOpt = lojaRepository.findById(id);
+        if (lojaOpt.isPresent()) {
+            LojaModel loja = lojaOpt.get();
+            loja.setStatusLoja(StatusLoja.INATIVO);
+            lojaRepository.save(loja);
+            return true;
+        }
+        return false;
     }
 }

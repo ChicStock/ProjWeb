@@ -22,9 +22,21 @@ public class SecurityFilter extends OncePerRequestFilter {
     @Autowired
     UsuarioRepository usuarioRepository;
 
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         var token = this.recoverToken(request);
+        String uri = request.getRequestURI();
+        if (uri.startsWith("/v3/api-docs")
+                || uri.startsWith("/swagger-ui")
+                || uri.startsWith("/swagger-resources")
+                || uri.startsWith("/h2-console")
+                || uri.startsWith("/auth/login")
+                || uri.startsWith("/auth/register")) {
+
+            filterChain.doFilter(request, response);
+            return;
+        }
         if(token != null){
             var email = tokenService.validateToken(token);
             UserDetails user = usuarioRepository.findByEmail(email);

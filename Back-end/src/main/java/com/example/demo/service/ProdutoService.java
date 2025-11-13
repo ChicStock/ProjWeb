@@ -29,7 +29,7 @@ public class ProdutoService {
 
     @Transactional
     public ProdutoResponseDTO criarProduto(ProdutoRequestDTO requestDTO) {
-        // Validar categoria existe e está ativa
+
         CategoriaModel categoria = categoriaRepository.findById(requestDTO.getCategoriaId())
                 .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada com ID: " + requestDTO.getCategoriaId()));
 
@@ -37,7 +37,6 @@ public class ProdutoService {
             throw new InvalidOperationException("Categoria não está ativa: " + categoria.getNome());
         }
 
-        // Validar loja existe e está ativa
         LojaModel loja = lojaRepository.findById(requestDTO.getLojaId())
                 .orElseThrow(() -> new ResourceNotFoundException("Loja não encontrada com ID: " + requestDTO.getLojaId()));
 
@@ -45,7 +44,6 @@ public class ProdutoService {
             throw new InvalidOperationException("Loja não está ativa: " + loja.getNome());
         }
 
-        // Criar produto
         ProdutoModel produto = ProdutoModel.builder()
                 .nome(requestDTO.getNome())
                 .preco(requestDTO.getPreco())
@@ -141,7 +139,6 @@ public class ProdutoService {
 
         ProdutoModel produtoExistente = optionalProduto.get();
 
-        // Validar e atualizar categoria se fornecida
         if (updateDTO.getCategoriaId() != null) {
             CategoriaModel categoria = categoriaRepository.findById(updateDTO.getCategoriaId())
                     .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
@@ -152,7 +149,6 @@ public class ProdutoService {
             produtoExistente.setCategoria(categoria);
         }
 
-        // Validar e atualizar loja se fornecida
         if (updateDTO.getLojaId() != null) {
             LojaModel loja = lojaRepository.findById(updateDTO.getLojaId())
                     .orElseThrow(() -> new ResourceNotFoundException("Loja não encontrada"));
@@ -163,7 +159,6 @@ public class ProdutoService {
             produtoExistente.setLoja(loja);
         }
 
-        // Atualizar outros campos se fornecidos
         if (updateDTO.getNome() != null) {
             produtoExistente.setNome(updateDTO.getNome());
         }
@@ -186,22 +181,19 @@ public class ProdutoService {
 
     @Transactional
     public void excluirProduto(Long id, boolean confirm) {
-        // Validação de confirmação obrigatória
+
         if (!confirm) {
             throw new ConfirmationRequiredException(
                     "Para excluir este produto, você deve confirmar a operação enviando 'confirm=true'"
             );
         }
 
-        // Verificar se produto existe
         ProdutoModel produto = produtoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado com ID: " + id));
 
-        // Log de auditoria
         log.info("Excluindo produto: ID={}, Nome={}, Categoria={}, Loja={}",
                 id, produto.getNome(), produto.getCategoria().getNome(), produto.getLoja().getNome());
 
-        // Exclusão física (pode ser alterado para lógica mudando status)
         produtoRepository.delete(produto);
 
         log.info("Produto excluído com sucesso: ID={}", id);
@@ -209,7 +201,7 @@ public class ProdutoService {
 
     private Sort buildDynamicSort(String[] sortBy, String[] sortDir) {
         if (sortBy == null || sortBy.length == 0) {
-            // Ordenação padrão: preço crescente, depois nome crescente
+
             return Sort.by(
                     Sort.Order.asc("preco"),
                     Sort.Order.asc("nome")

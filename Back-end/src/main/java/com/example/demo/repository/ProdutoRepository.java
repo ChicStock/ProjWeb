@@ -16,28 +16,22 @@ import java.util.List;
 @Repository
 public interface ProdutoRepository extends JpaRepository<ProdutoModel, Long> {
 
-    // Busca básica
     List<ProdutoModel> findByStatus(ProdutoStatus status, Sort sort);
     Page<ProdutoModel> findByStatus(ProdutoStatus status, Pageable pageable);
 
-    // Ordenação predefinida
     List<ProdutoModel> findAllByStatusOrderByPrecoAscNomeAsc(ProdutoStatus status);
     List<ProdutoModel> findAllByStatusOrderByPrecoDescNomeAsc(ProdutoStatus status);
 
-    // Busca por categoria e loja
     List<ProdutoModel> findByCategoriaIdAndStatus(Long categoriaId, ProdutoStatus status, Sort sort);
     List<ProdutoModel> findByLojaIdAndStatus(Long lojaId, ProdutoStatus status, Sort sort);
 
     Page<ProdutoModel> findByCategoriaIdAndStatus(Long categoriaId, ProdutoStatus status, Pageable pageable);
     Page<ProdutoModel> findByLojaIdAndStatus(Long lojaId, ProdutoStatus status, Pageable pageable);
 
-    // Busca por nome
     List<ProdutoModel> findByNomeContainingAndStatus(String nome, ProdutoStatus status, Sort sort);
 
-    // Busca por faixa de preço
     List<ProdutoModel> findByPrecoBetweenAndStatus(BigDecimal precoMin, BigDecimal precoMax, ProdutoStatus status, Sort sort);
 
-    // Busca avançada com múltiplos filtros
     @Query("SELECT p FROM ProdutoModel p WHERE " +
             "(:nome IS NULL OR LOWER(p.nome) LIKE LOWER(CONCAT('%', :nome, '%'))) AND " +
             "(:categoriaId IS NULL OR p.categoria.id = :categoriaId) AND " +
@@ -52,12 +46,11 @@ public interface ProdutoRepository extends JpaRepository<ProdutoModel, Long> {
                                               @Param("precoMax") BigDecimal precoMax,
                                               Pageable pageable);
 
-    // Contadores
+
     Long countByStatus(ProdutoStatus status);
     Long countByCategoriaIdAndStatus(Long categoriaId, ProdutoStatus status);
     Long countByLojaIdAndStatus(Long lojaId, ProdutoStatus status);
 
-    // Verificações de existência
     boolean existsByNomeAndStatus(String nome, ProdutoStatus status);
 }
 

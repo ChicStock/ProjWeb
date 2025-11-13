@@ -16,6 +16,7 @@ import java.util.List;
 @Entity
 @Table(name = "tb_usuario")
 public class UsuarioModel implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,35 +33,28 @@ public class UsuarioModel implements UserDetails {
     @Column(unique = true, nullable = false, length = 15)
     private String telefone;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private StatusUsuario status = StatusUsuario.ATIVO;
-
-    @Column(unique = true, nullable = false, length = 11)
-    @Column(unique = true, nullable = false)
-    private String telefone;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private StatusUsuario status = StatusUsuario.ATIVO;
-
     @Column(unique = true, nullable = false, length = 11)
     private String cpf;
 
     @Column(nullable = false)
     private String senha;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private StatusUsuario status = StatusUsuario.ATIVO;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private UserRole role;
 
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private LojaModel loja;
+
     @OneToOne(cascade = CascadeType.ALL)
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "endereco_id")
-    private EnderecoModel endereco;
-    @OneToOne
     @JoinColumn(name = "endereco_id")
     private EnderecoModel endereco;
 
-    public UsuarioModel(String nome, String sobrenome, String email,String telefone,String cpf, String senha, UserRole role){
+    public UsuarioModel(String nome, String sobrenome, String email, String telefone, String cpf, String senha, UserRole role) {
         this.nome = nome;
         this.sobrenome = sobrenome;
         this.email = email;
@@ -72,10 +66,13 @@ public class UsuarioModel implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if(this.role == UserRole.LOJISTA)
-            return List.of(new SimpleGrantedAuthority("ROLE_USUARIO"),
-                    new SimpleGrantedAuthority("ROLE_LOJISTA"));
-        else return List.of(new SimpleGrantedAuthority("ROLE_USUARIO"));
+        if (this.role == UserRole.LOJISTA) {
+            return List.of(
+                    new SimpleGrantedAuthority("ROLE_USUARIO"),
+                    new SimpleGrantedAuthority("ROLE_LOJISTA")
+            );
+        }
+        return List.of(new SimpleGrantedAuthority("ROLE_USUARIO"));
     }
 
     @Override
@@ -85,7 +82,7 @@ public class UsuarioModel implements UserDetails {
 
     @Override
     public String getUsername() {
-        return nome;
+        return email;
     }
 
     @Override
