@@ -8,7 +8,7 @@ import TelaInicial from './pages/TelaCliente/TelaInicial.jsx'
 import RelatorioVendas from "./pages/TelaLoja/RelatorioVendas.jsx";
 import CadastrarLoja from "./pages/TelaLoja/CadastrarLoja.jsx"
 import PersonalizarLoja from "./pages/TelaLoja/PersonalizarLoja.jsx"
-
+import MeusPedidos from "./pages/TelaCliente/MeusPedidos.jsx"
 
 function App() {
   return (
@@ -22,6 +22,7 @@ function App() {
       <Route path="/RelatorioVendas" element={<RelatorioVendas/>}/>
       <Route path="/CadastrarLoja" element={<CadastrarLoja/>}/>
       <Route path="/PersonalizarLoja/:id" element={<PersonalizarLoja/>}/>
+      <Route path="/MeusPedidos" element={<MeusPedidos/>}/>
 
     </Routes>
   );
