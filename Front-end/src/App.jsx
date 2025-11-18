@@ -2,12 +2,12 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
-import Login from './pages/login'; 
-import Cadastro from './pages/cadastro';
-import TelaInicial from './componentes/TelaInicial'
-import RelatorioVendas from "./pages/RelatorioVendas.jsx";
-import CadastrarLoja from "./pages/CadastrarLoja.jsx"
-import PersonalizarLoja from "./pages/PersonalizarLoja.jsx"
+import Login from './pages/TelaLoja/login.jsx'; 
+import Cadastro from './pages/TelaLoja/cadastro.jsx';
+import TelaInicial from './pages/TelaCliente/TelaInicial.jsx'
+import RelatorioVendas from "./pages/TelaLoja/RelatorioVendas.jsx";
+import CadastrarLoja from "./pages/TelaLoja/CadastrarLoja.jsx"
+import PersonalizarLoja from "./pages/TelaLoja/PersonalizarLoja.jsx"
 
 
 function App() {

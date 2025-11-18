@@ -3,7 +3,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import {BsClock, BsGeoAlt, BsTelephone,BsEnvelope,BsInstagram} from "react-icons/bs";
 import Navbar from "./NavBar";
-import Loja2 from "../assets/Loja2.png";
+import Loja2 from "../../assets/Loja2.png";
 import "./TelaLoja.css";
 
 function TelaLoja() {

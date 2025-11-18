@@ -1,5 +1,5 @@
 import './cadastro.css'
-import Logo1 from '../assets/Logo1.png'
+import Logo1 from '../../assets/Logo1.png'
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';

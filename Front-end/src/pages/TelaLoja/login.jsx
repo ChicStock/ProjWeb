@@ -1,5 +1,5 @@
 import './login.css'
-import Logo1 from '../assets/Logo1.png'
+import Logo1 from '../../assets/Logo1.png'
 import { useState } from 'react'; 
 import axios from 'axios'; 
 // 1. IMPORTAR O 'useNavigate' e o 'Link'
@@ -31,10 +31,8 @@ function Login () {
     // e ir direto para a navegação para testar o fluxo de telas.
 
     alert('Simulando login bem-sucedido para testar navegação...');
-    // Vamos simular que salvamos um token para testes
     localStorage.setItem('authToken', 'fake-token-para-teste'); 
     
-    // Navega direto para a tela inicial (o que aconteceria no sucesso)
     navigate('/Telainicial'); 
 
     // --- CÓDIGO ORIGINAL (PARA QUANDO O BACK-END VOLTAR) ---

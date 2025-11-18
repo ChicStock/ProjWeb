@@ -6,14 +6,14 @@ import Navbar from "./NavBar";
 import "./TelaInicial.css";
 import { Link } from "react-router-dom";
 
-import Loja1 from "../assets/Loja1.png";
-import Loja2 from "../assets/Loja2.png";
-import Loja3 from "../assets/Loja3.png";
-import Loja4 from "../assets/Loja4.png";
-import Loja5 from "../assets/Loja5.png";
-import Loja6 from "../assets/Loja6.png";
-import ChicStock from "../assets/ChicStock.png";
-import Cadastre from "../assets/Cadastre.png";
+import Loja1 from "../../assets/Loja1.png";
+import Loja2 from "../../assets/Loja2.png";
+import Loja3 from "../../assets/Loja3.png";
+import Loja4 from "../../assets/Loja4.png";
+import Loja5 from "../../assets/Loja5.png";
+import Loja6 from "../../assets/Loja6.png";
+import ChicStock from "../../assets/ChicStock.png";
+import Cadastre from "../../assets/Cadastre.png";
 
 function TelaInicial() {
     return (
