@@ -1,6 +1,6 @@
 import React from 'react';
 import './RelatorioVendas.css';
-import logo from '../assets/logo2teste.png'
+import logo from '../../assets/logo2teste.png'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const dadosVendas = [
