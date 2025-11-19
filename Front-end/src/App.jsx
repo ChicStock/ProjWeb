@@ -13,6 +13,7 @@ import FinalizarPedido from "./pages/TelaCliente/FinalizarPedido.jsx"
 import FormaPagamento from "./pages/TelaCliente/FormaPagamento.jsx"
 import TrocarEndereco from './pages/TelaCliente/TrocarEndereco.jsx';
 import TelaLoja from './pages/TelaCliente/TelaLoja.jsx';
+import CadastroProduto from './pages/TelaLoja/cadastroProduto.jsx'
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
       <Route path="/FormaPagamento" element={<FormaPagamento/>}/>
       <Route path="/TrocarEndereco" element={<TrocarEndereco/>}/>
       <Route path="/TelaLoja" element={<TelaLoja/>}/>
+      <Route path="/cadastroProduto" element={<CadastroProduto/>}/>
 
     </Routes>
   );

@@ -1,87 +1,107 @@
 import React, { useState } from 'react';
 import './CadastrarLoja.css';
-import logosite from '../../assets/logo2teste.png';
+import logosite from '../../assets/logo1.png'; 
 import { useNavigate } from 'react-router-dom';
-// import axios from 'axios'; // Não precisamos do axios para simulação
+import axios from 'axios';
 
 const CadastrarLoja = () => {
   const navigate = useNavigate();
   
   const [nomeLoja, setNomeLoja] = useState('');
-  const [descricao, setDescricao] = useState('');
+  const [cnpj, setCnpj] = useState(''); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    console.log('Dados da nova loja:', { nomeLoja, descricao });
-    alert('Loja criada com sucesso! Simulando navegação para a personalização...');
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+        alert("Você precisa logar primeiro!");
+        navigate('/login');
+        return;
+    }
 
-    navigate('/personalizarLoja/123-simulado'); 
-    
-    // --- CÓDIGO ORIGINAL (PARA QUANDO O BACK-END VOLTAR) ---
-    /*
+    const cnpjLimpo = cnpj.replace(/\D/g, '');
+
+    if (cnpjLimpo.length !== 14) {
+        alert("O CNPJ é obrigatório e deve conter exatamente 14 números.");
+        return;
+    }
+
+    const dataToSubmit = { 
+        nome: nomeLoja,
+        cnpj: cnpjLimpo 
+    };
+
+    console.log("Enviando:", dataToSubmit);
+
     try {
-      const dataToSubmit = { nome: nomeLoja, descricao: descricao };
-      
-      const response = await axios.post('http://localhost:8080/api/lojas', dataToSubmit);
+      const response = await axios.post('http://localhost:8080/api/v1/lojas', dataToSubmit, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       
       const novaLojaId = response.data.id; 
 
-      alert('Loja criada com sucesso! Agora vamos personalizar.');
-      navigate(`/personalizar-loja/${novaLojaId}`); 
+      alert('Loja criada com sucesso!');
+      navigate(`/personalizarLoja/${novaLojaId}`); 
 
     } catch (error) {
-       console.error('Erro ao criar loja:', error.response ? error.response.data : error.message);
-       alert('Erro ao criar a loja. Tente novamente.');
+       console.error('Erro detalhado:', error);
+       
+       let msg = 'Erro ao criar a loja.';
+       if (error.response && error.response.data) {
+           if (error.response.data.message) msg += ` ${error.response.data.message}`;
+       }
+       alert(msg);
     }
-    */
-    // --- FIM DO CÓDIGO ORIGINAL ---
   };
 
   return (
     <div className="cadastro-loja-wrapper">
- 
+      
+      <div className="logo-externo-cadastro">
+        <img src={logosite} alt="Logo Site" />
+      </div>
+
       <form className="cadastro-loja-container" onSubmit={handleSubmit}>
         
-        <div className="logo-interno-container">
-          <img src={logosite} alt="Logo Site" className="logo-interno-img" />
-        </div>
-
         <h2>Vamos criar sua loja!</h2>
-        <p>Comece com o básico. Você poderá adicionar todos os detalhes de endereço, contato e horários depois.</p>
+        <p>Insira os dados básicos para começar.</p>
 
         <div className="campo-container">
           <label htmlFor="nomeLoja">Nome da Loja:</label>
-          <input
-            type="text"
-            id="nomeLoja"
-            className="input-field"
-            value={nomeLoja}
-            onChange={(e) => setNomeLoja(e.target.value)}
-            placeholder="Ex: Max Maize"
-            required
-          />
+          <div className="input-visual">
+            <input
+                type="text"
+                id="nomeLoja"
+                value={nomeLoja}
+                onChange={(e) => setNomeLoja(e.target.value)}
+                placeholder="Ex: Max Maize"
+                required
+                maxLength="200"
+            />
+          </div>
         </div>
 
         <div className="campo-container">
-          <label htmlFor="descricao">Descrição:</label>
-          <textarea
-            id="descricao"
-            className="input-field"
-            rows="4"
-            value={descricao}
-            onChange={(e) => setDescricao(e.target.value)}
-            placeholder="Ex: Jeans de verdade, estilo sem limites."
-            required
-          />
+          <label htmlFor="cnpj">CNPJ:</label>
+          <div className="input-visual">
+            <input
+                type="text"
+                id="cnpj"
+                value={cnpj}
+                onChange={(e) => setCnpj(e.target.value)}
+                placeholder="00.000.000/0000-00"
+                required
+                maxLength="18"
+            />
+          </div>
         </div>
 
         <div className="rodape-acoes">
           <button type="submit" className="btn-salvar">
-            Criar Loja e Personalizar
+            Criar Loja
           </button>
         </div>
-
       </form>
     </div>
   );
