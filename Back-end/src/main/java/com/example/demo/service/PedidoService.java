@@ -37,6 +37,7 @@ public class PedidoService {
     private final LojaRepository lojaRepository;
     private final ModelMapper modelMapper;
 
+    @Transactional
     public PedidoResponseDTO criarPedido(PedidoRequestDTO pedidoRequestDTO) {
         var usuario = usuarioRepository.findById(pedidoRequestDTO.getUsuarioId())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
@@ -47,20 +48,22 @@ public class PedidoService {
         BigDecimal valorTotal = BigDecimal.ZERO;
         List<ProdutoModel> produtos = new ArrayList<>();
 
-        for (ProdutoQuantidadeDTO item : pedidoRequestDTO.getProdutos()) {
-            ProdutoModel produto = produtoRepository.findById(item.getId())
-                    .orElseThrow(() -> new RuntimeException("Produto não encontrado: " + item.getId()));
+        if (pedidoRequestDTO.getProdutos() != null) {
+            for (ProdutoQuantidadeDTO item : pedidoRequestDTO.getProdutos()) {
+                ProdutoModel produto = produtoRepository.findById(item.getId())
+                        .orElseThrow(() -> new RuntimeException("Produto não encontrado: " + item.getId()));
 
-            BigDecimal subtotal = produto.getPreco().multiply(BigDecimal.valueOf(item.getQuantidade()));
-            valorTotal = valorTotal.add(subtotal);
+                BigDecimal subtotal = produto.getPreco().multiply(BigDecimal.valueOf(item.getQuantidade()));
+                valorTotal = valorTotal.add(subtotal);
 
-            produtos.add(produto);
+                produtos.add(produto);
+            }
         }
 
         PedidoModel pedido = PedidoModel.builder()
                 .pedidoStatus(PedidoStatus.CARRINHO)
                 .data(LocalDateTime.now())
-                .valorTotal(valorTotal.doubleValue()) // ou altere o tipo de valorTotal para BigDecimal
+                .valorTotal(valorTotal.doubleValue())
                 .usuario(usuario)
                 .loja(loja)
                 .produtos(produtos)
@@ -68,14 +71,8 @@ public class PedidoService {
 
         pedidoRepository.save(pedido);
 
-        return new PedidoResponseDTO(
-                pedido.getId(),
-                pedido.getValorTotal(),
-                pedido.getPedidoStatus(),
-                pedido.getData()
-        );
+        return convertToResponseDTO(pedido);
     }
-
 
     public List<PedidoResponseDTO> listarTodos(String[] sort, String[] sortDir) {
         Sort ordenacao = Sort.unsorted();
@@ -128,9 +125,9 @@ public class PedidoService {
         }
 
         PedidoModel pedido = optional.get();
-        pedido.setValorTotal(requestDTO.getValorTotal());
-        pedido.setData(requestDTO.getData());
-        pedido.setPedidoStatus(requestDTO.getPedidoStatus());
+        if (requestDTO.getValorTotal() != null) pedido.setValorTotal(requestDTO.getValorTotal());
+        if (requestDTO.getData() != null) pedido.setData(requestDTO.getData());
+        if (requestDTO.getPedidoStatus() != null) pedido.setPedidoStatus(requestDTO.getPedidoStatus());
 
         PedidoModel atualizado = pedidoRepository.save(pedido);
         return Optional.of(convertToResponseDTO(atualizado));
@@ -151,6 +148,35 @@ public class PedidoService {
     }
 
     private PedidoResponseDTO convertToResponseDTO(PedidoModel pedido) {
-        return modelMapper.map(pedido, PedidoResponseDTO.class);
+        String resumo = "";
+        if (pedido.getProdutos() != null && !pedido.getProdutos().isEmpty()) {
+            resumo = pedido.getProdutos().stream()
+                    .limit(2)
+                    .map(ProdutoModel::getNome)
+                    .collect(Collectors.joining(", "));
+
+            if (pedido.getProdutos().size() > 2) {
+                resumo += "...";
+            }
+        } else {
+            resumo = "Sem itens";
+        }
+
+        String nomeCliente = "Cliente Removido";
+        String telefoneCliente = "";
+        if (pedido.getUsuario() != null) {
+            nomeCliente = pedido.getUsuario().getNome() + " " + pedido.getUsuario().getSobrenome();
+            telefoneCliente = pedido.getUsuario().getTelefone();
+        }
+
+        return PedidoResponseDTO.builder()
+                .id(pedido.getId())
+                .valorTotal(pedido.getValorTotal())
+                .pedidoStatus(pedido.getPedidoStatus())
+                .data(pedido.getData())
+                .nomeCliente(nomeCliente)
+                .telefoneCliente(telefoneCliente)
+                .resumoItens(resumo)
+                .build();
     }
 }

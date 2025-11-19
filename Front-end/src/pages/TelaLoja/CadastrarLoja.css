@@ -1,108 +1,139 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
 
 .cadastro-loja-wrapper {
-  position: relative;
-  width: 100%;
-  min-height: 100vh;
-  margin: 0;
-  padding: 40px;
-  font-family: 'Poppins', Arial, sans-serif;
-  background-color: #f4f4f4;
-  box-sizing: border-box;
+    --fundo-geral: #f0ede8; 
+    --fundo-formulario: #9b9490; 
+    --texto-primario-form: #ffffff; 
+    --texto-secundario-form: #f0f0f0;
+    --input-background-edit: #ffffff; 
+    --input-text-edit: #333333; 
+    --botao-primario-bg: #d4d4d4; 
+    --botao-primario-text: #7d7d7d; 
 }
 
-.logo-interno-container {
-  text-align: center;
-  background-color: #7a7a7a;
-  padding: 10px 100px;
-  border-radius: 8px;
-  max-width: 200px;
-  margin: 0 auto 20px;
-}
-
-.logo-interno-img {
-  height: 180px;
-  max-width: 100%; 
-}
-
-.cadastro-loja-container {
+.cadastro-loja-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  background-color: #ffffff;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
-  margin: 40px auto;
-}
-
-.cadastro-loja-container h2 {
-  text-align: center;
-  color: #333;
-  font-weight: 700;
-  margin-bottom: 5px;
-}
-
-.cadastro-loja-container p {
-  text-align: center;
-  color: #666;
-  font-size: 0.95em;
-  margin-bottom: 20px;
-  line-height: 1.5;
-}
-
-.campo-container {
-  width: 100%;
-}
-
-.campo-container label {
-  display: block;
-  font-size: 0.9em;
-  color: #888; 
-  margin-bottom: 4px;
-}
-
-.input-field {
-  width: 100%;
-  border: 1px solid #e0e0e0; 
-  border-radius: 8px;
-  padding: 14px;
-  background-color: #fdfdfd;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 40px 20px;
+  background-color: var(--fundo-geral);
   font-family: 'Poppins', Arial, sans-serif;
-  font-size: 1em;
-  color: #333;
   box-sizing: border-box;
+  color: #333;
 }
 
-.input-field::placeholder {
-  color: #ccc;
+.cadastro-loja-wrapper .logo-externo-cadastro {
+  margin-top: -120px;
+  margin-bottom: -80px;
+  max-width: 1000px;
 }
 
-textarea.input-field {
-  resize: vertical;
-  min-height: 100px;
+.cadastro-loja-wrapper .logo-externo-cadastro img {
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
-.rodape-acoes {
+.cadastro-loja-wrapper .cadastro-loja-container {
+  background-color: var(--fundo-formulario);
+  color: var(--texto-primario-form);
+  
+  width: 100%;
+  max-width: 500px;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cadastro-loja-wrapper .cadastro-loja-container h2 {
+  margin: 0;
+  font-size: 1.8rem;
   text-align: center;
-  margin-top: 20px;
+  font-weight: 700;
+  color: var(--texto-primario-form);
 }
 
-.btn-salvar {
-  background-color: #9A9A9A;
-  color: white;
+.cadastro-loja-wrapper .cadastro-loja-container p {
+  text-align: center;
+  margin-top: -10px;
+  margin-bottom: 20px;
+  color: var(--texto-secundario-form);
+  font-size: 0.9rem;
+}
+
+.cadastro-loja-wrapper .campo-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cadastro-loja-wrapper .campo-container label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--texto-secundario-form);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.cadastro-loja-wrapper .input-visual {
+  background-color: var(--input-background-edit);
+  border-radius: 6px;
+  padding: 5px 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.cadastro-loja-wrapper .input-visual input {
+  width: 100%;
   border: none;
-  padding: 12px 50px;
-  border-radius: 8px;
-  font-size: 1em;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  font-family: 'Poppins', Arial, sans-serif;
-  width: 100%; 
+  background: transparent;
+  padding: 10px 0;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  color: var(--input-text-edit);
+  outline: none;
+  text-shadow: none;
 }
 
-.btn-salvar:hover {
-  background-color: #808080;
+.cadastro-loja-wrapper .input-visual input::placeholder {
+    color: #aaa;
+}
+
+.cadastro-loja-wrapper .rodape-acoes {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.cadastro-loja-wrapper .btn-salvar {
+  background-color: var(--botao-primario-bg);
+  color: var(--botao-primario-text);
+  border: none;
+  padding: 14px 0;
+  width: 100%;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 0.1s, background-color 0.2s;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  text-shadow: none;
+}
+
+.cadastro-loja-wrapper .btn-salvar:hover {
+  background-color: #fff;
+  color: #333;
+  transform: translateY(-2px);
+}
+
+.cadastro-loja-wrapper .btn-salvar:active {
+  transform: translateY(1px);
 }

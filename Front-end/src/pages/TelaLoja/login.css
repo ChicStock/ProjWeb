@@ -1,16 +1,25 @@
 #Pagina {
   background-color: #f0ede8;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 40px;
+  justify-content: center;
+  padding: 40px 20px;
   font-family: 'Arial', sans-serif;
   color: #7d7d7d;
 }
 
 h1 {
   font-weight: normal;
+  margin-bottom: 80px;
+  text-align: center;
+  font-size: 1.4rem;
+}
+
+.logo1 {
+  max-width: 250px;
+  height: auto;
   margin-bottom: 10px;
 }
 
@@ -19,11 +28,19 @@ h1 {
   padding: 30px 40px;
   border-radius: 6px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  width: 320px;
+  width: 100%;
+  max-width: 350px; 
+  
   display: flex;
   flex-direction: column;
   gap: 25px;
   color: white;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
 .menu input {
@@ -35,6 +52,7 @@ h1 {
   color: #eee;
   outline: none;
   transition: border-color 0.3s;
+  width: 100%;
 }
 
 .menu input::placeholder {
@@ -49,18 +67,42 @@ button {
   background-color: #d4d4d4;
   border: none;
   border-radius: 4px;
-  padding: 7px;
+  padding: 10px;
   color: #7d7d7d;
   cursor: pointer;
   font-weight: 600;
   box-shadow: 0 2px 4px rgba(0,0,0,0.15);
   transition: background-color 0.3s ease;
+  width: 100%;
+  margin-top: 10px;
 }
 
 button:hover {
   background-color: #c1bdbb;
 }
-.logo1 {
-  max-width: 350px;
-  height: auto;    
+
+.register-link-container {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.register-link {
+  color: #9b9490;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.register-link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 400px) {
+  .menu {
+    padding: 20px 25px;
+  }
+  
+  h1 {
+    font-size: 1.2rem;
+  }
 }

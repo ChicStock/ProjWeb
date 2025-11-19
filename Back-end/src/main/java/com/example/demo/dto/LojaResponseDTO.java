@@ -11,9 +11,12 @@ import java.time.LocalDateTime;
 public class LojaResponseDTO {
     private Long id;
     private String nome;
+    private String descricao;
     private String endereco;
     private String telefone;
     private String cnpj;
+    private String entrega;
+    private String pagamento;
     private StatusLoja status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

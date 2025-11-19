@@ -27,6 +27,16 @@ public class LojaModel {
     @Column(nullable = false)
     private String nome;
 
+    @Size(max = 1000, message = "Descrição muito longa")
+    @Column(length = 1000)
+    private String descricao;
+
+    @Size(max = 200)
+    private String entrega; 
+
+    @Size(max = 500)
+    private String pagamento;
+
     @Size(max = 500, message = "Endereço deve ter no máximo 500 caracteres")
     private String endereco;
 

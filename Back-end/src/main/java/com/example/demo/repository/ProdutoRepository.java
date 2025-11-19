@@ -16,6 +16,7 @@ import java.util.List;
 @Repository
 public interface ProdutoRepository extends JpaRepository<ProdutoModel, Long> {
 
+    List<ProdutoModel> findByLojaId(Long lojaId);
     List<ProdutoModel> findByStatus(ProdutoStatus status, Sort sort);
     Page<ProdutoModel> findByStatus(ProdutoStatus status, Pageable pageable);
 
