@@ -3,23 +3,27 @@ import "./Navbar.css";
 import Logo2 from "../../assets/Logo2.png";   
 import { BsBag } from "react-icons/bs";
 import { IoMdSearch } from "react-icons/io";
-// Adicionei as importações corretas do Bootstrap
 import { NavDropdown, Offcanvas, Button, Card } from "react-bootstrap"; 
-// 👇 IMPORTANTE: Importar o Link para o Router funcionar
-import { Link } from "react-router-dom"; 
+import { Link, useNavigate } from "react-router-dom"; 
 
 function Navbar() {
   const [showSacola, setShowSacola] = useState(false);
+  
+  const navigate = useNavigate();
 
   const handleClose = () => setShowSacola(false);
   const handleShow = () => setShowSacola(true);
+
+  const irParaFinalizarPedido = () => {
+    handleClose();
+    navigate("/FinalizarPedido");
+  };
 
   return (
     <> 
       <header className="navbar"> 
         <div className="navbar-top">
           <div className="logo-container">
-            {/* 👇 Logo agora clica e volta para a Tela Inicial */}
             <Link to="/Telainicial">
                 <img src={Logo2} alt="Logo" className="logo2" />
             </Link>
@@ -40,21 +44,18 @@ function Navbar() {
               Bem-vindo(a), <b>Usuário</b>
             </span>
 
-            {/* 👇 NavDropdown corrigido para Router e sem erro de rootClose */}
             <NavDropdown
               title="Minha Conta" 
               id="basic-nav-dropdown"
               className="user-dropdown"
             >
               <NavDropdown.Item as={Link} to="/perfil">Perfil</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/meusPedidos">Meus Pedidos</NavDropdown.Item>
-              {/* Rota conforme seu App.js */}
+              <NavDropdown.Item as={Link} to="/meus-pedidos">Meus Pedidos</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/CadastrarLoja">Cadastre sua loja</NavDropdown.Item>
               <NavDropdown.Divider />
               <NavDropdown.Item as={Link} to="/login">Sair</NavDropdown.Item>
             </NavDropdown>
 
-            {/* 👇 Adicionei cursor pointer na sacola */}
             <BsBag 
               size={22} 
               className="ms-3" 
@@ -65,7 +66,6 @@ function Navbar() {
         </div>
 
         <nav className="navbar-bottom">
-          {/* 👇 Links preparados para o Router (troque o to="#" pelas rotas reais depois) */}
           <Link to="#">Jeans</Link>
           <Link to="#">Feminino</Link>
           <Link to="#">Masculino</Link>
@@ -76,7 +76,6 @@ function Navbar() {
         </nav>
       </header>
 
-      {/* 👇 Offcanvas da Sacola (Mantido igual) */}
       <Offcanvas show={showSacola} onHide={handleClose} placement="end">
         <Offcanvas.Header closeButton>
           <Offcanvas.Title>SACOLA</Offcanvas.Title>
@@ -120,7 +119,11 @@ function Navbar() {
               <span>R$ 47,99</span>
             </div>
 
-            <Button className="w-100 mt-3 btn-pagamento" variant="primary">
+            <Button 
+                className="w-100 mt-3 btn-pagamento" 
+                variant="primary"
+                onClick={irParaFinalizarPedido}
+            >
               Fechar Pedido
             </Button>
           </Card>

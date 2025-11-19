@@ -37,13 +37,13 @@ function TrocarEndereco() {
           <div className="d-flex justify-content-center">
             <Button
               variant="outline-secondary"
-              onClick={() => (window.location.href = "/")}
+              onClick={() => (window.location.href = "/FinalizarPedido")}
             >
               Cancelar
             </Button>
             <Button
               className="btn-pagamento"
-              onClick={() => (window.location.href = "/")}
+              onClick={() => (window.location.href = "/FinalizarPedido")}
             >
               Salvar Endereço
             </Button>

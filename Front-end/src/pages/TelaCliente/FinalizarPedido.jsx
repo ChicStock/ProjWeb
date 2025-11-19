@@ -2,8 +2,12 @@ import React from "react";
 import Navbar from "./NavBar";
 import { Container, Row, Col, Button, Card } from "react-bootstrap";
 import "./FinalizarPedido.css";
+import { useNavigate } from "react-router-dom";
 
 function FinalizarPedido() {
+
+  const navigate = useNavigate();
+
   return (
     <>
       <Navbar />
@@ -16,48 +20,48 @@ function FinalizarPedido() {
         </div>
 
         <Row className="mt-3">
-
           <Col md={6}>
             <div className="endereco-section">
               <div className="endereco-info">
                 <div className="endereco-texto">
                   <i className="bi bi-geo-alt-fill"></i>
                   <span className="endereco-titulo">Av. Engenheiro Santana Júnior</span>
+                </div>
+                <button className="trocar-btn" onClick={() => navigate("/TrocarEndereco")}>Trocar</button>
               </div>
-              <button className="trocar-btn">Trocar</button>
-            </div>
             
-          <p className="tempo-info">Hoje 10–20 min</p>
-          
-          
-          <Card className="opcao-card">
-            <div className="opcao-header">
-              <h5>Padrão</h5>
-              <p className="opcao-tempo">Hoje 10–20 min</p>
-            </div>
-            <p className="opcao-preco gratis">Grátis</p>
+              <p className="tempo-info">Hoje 10–20 min</p>
             
-        <Button variant="outline-secondary" size="sm">
-          Selecionar
-        </Button>
-          </Card>
+              <Card className="opcao-card">
+                <div className="opcao-header">
+                  <h5>Padrão</h5>
+                  <p className="opcao-tempo">Hoje 10–20 min</p>
+                </div>
+                <p className="opcao-preco gratis">Grátis</p>
+                <Button variant="outline-secondary" size="sm">
+                  Selecionar
+                </Button>
+              </Card>
+            
+              <Card className="opcao-card">
+                <div className="opcao-header">
+                  <h5>Fast</h5>
+                  <p className="opcao-tempo">Hoje 5–10 min</p>
+                </div>
+                <p className="opcao-preco">R$ 7,99</p>
+                <Button variant="outline-secondary" size="sm">
+                  Selecionar
+                </Button>
+              </Card>
           
-        <Card className="opcao-card">
-          <div className="opcao-header">
-            <h5>Fast</h5>
-            <p className="opcao-tempo">Hoje 5–10 min</p>
-          </div>
-          <p className="opcao-preco">R$ 7,99</p>
-            <Button variant="outline-secondary" size="sm">
-            Selecionar
-            </Button>
-        </Card>
-        
-        <Button className="mt-3 btn-pagamento">
-          Selecionar Forma de Pagamento
-        </Button>
-      </div>
-         </Col>
+              <Button 
+                className="mt-3 btn-pagamento"
+                onClick={() => navigate("/FormaPagamento")}
+              >
+                Selecionar Forma de Pagamento
+              </Button>
+            </div>
+          </Col>
     
           <Col md={6}>
             <Card className="resumo-card shadow-sm">

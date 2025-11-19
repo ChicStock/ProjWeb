@@ -18,7 +18,7 @@ function FormaPagamento() {
         </Form>
 
         <div className="d-flex justify-content-between mt-4">
-          <Button variant="outline-secondary" onClick={() => (window.location.href = "/")}>
+          <Button variant="outline-secondary" onClick={() => (window.location.href = "/FinalizarPedido")}>
             Voltar
           </Button>
           <Button className="btn-pagamento">Confirmar Pagamento</Button>

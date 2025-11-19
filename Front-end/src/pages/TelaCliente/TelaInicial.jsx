@@ -48,7 +48,9 @@ function TelaInicial() {
                     </Col>
 
                     <Col md={4}>
-                        <img src={Loja2} alt="Loja 2" className="img-fluid rounded shadow" />
+                        <Link to="/TelaLoja">
+                            <img src={Loja2} alt="Loja 2" className="img-fluid rounded shadow"  />
+                        </Link>
                     </Col>
 
                     <Col md={4}>

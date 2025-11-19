@@ -9,6 +9,10 @@ import RelatorioVendas from "./pages/TelaLoja/RelatorioVendas.jsx";
 import CadastrarLoja from "./pages/TelaLoja/CadastrarLoja.jsx"
 import PersonalizarLoja from "./pages/TelaLoja/PersonalizarLoja.jsx"
 import MeusPedidos from "./pages/TelaCliente/MeusPedidos.jsx"
+import FinalizarPedido from "./pages/TelaCliente/FinalizarPedido.jsx"
+import FormaPagamento from "./pages/TelaCliente/FormaPagamento.jsx"
+import TrocarEndereco from './pages/TelaCliente/TrocarEndereco.jsx';
+import TelaLoja from './pages/TelaCliente/TelaLoja.jsx';
 
 function App() {
   return (
@@ -23,6 +27,10 @@ function App() {
       <Route path="/CadastrarLoja" element={<CadastrarLoja/>}/>
       <Route path="/PersonalizarLoja/:id" element={<PersonalizarLoja/>}/>
       <Route path="/MeusPedidos" element={<MeusPedidos/>}/>
+      <Route path="/FinalizarPedido" element={<FinalizarPedido/>}/>
+      <Route path="/FormaPagamento" element={<FormaPagamento/>}/>
+      <Route path="/TrocarEndereco" element={<TrocarEndereco/>}/>
+      <Route path="/TelaLoja" element={<TelaLoja/>}/>
 
     </Routes>
   );
