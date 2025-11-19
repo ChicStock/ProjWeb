@@ -1,7 +1,6 @@
 package com.example.demo.dto;
 
 import com.example.demo.model.PedidoStatus;
-import com.example.demo.model.StatusLoja;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,6 +15,9 @@ import java.time.LocalDateTime;
 public class PedidoResponseDTO {
     private Long id;
     private Double valorTotal;
-    private PedidoStatus PedidoStatus;
+    private PedidoStatus pedidoStatus;
     private LocalDateTime data;
+    private String nomeCliente;
+    private String telefoneCliente;
+    private String resumoItens;
 }

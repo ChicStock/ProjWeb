@@ -4,7 +4,9 @@ import com.example.demo.dto.UsuarioRequestDTO;
 import com.example.demo.dto.UsuarioResponseDTO;
 import com.example.demo.dto.UsuarioUpdateDTO;
 import com.example.demo.exception.DuplicateResourceException; // Corrigido o import
+import com.example.demo.model.StatusUsuario;
 import com.example.demo.model.UsuarioModel;
+import com.example.demo.model.enums.UserRole;
 import com.example.demo.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,6 +41,9 @@ public class UsuarioService {
 
         UsuarioModel usuario = modelMapper.map(requestDTO, UsuarioModel.class);
 
+        usuario.setRole(UserRole.USUARIO);
+        usuario.setStatus(StatusUsuario.ATIVO);
+
         usuario.setSenha(passwordEncoder.encode(requestDTO.getSenha()));
 
         UsuarioModel usuarioSalvo = usuarioRepository.save(usuario);
@@ -56,11 +61,6 @@ public class UsuarioService {
         return usuarioRepository.findById(id)
                 .map(usuario -> modelMapper.map(usuario, UsuarioResponseDTO.class));
     }
-
-//    public Optional<UsuarioResponseDTO> buscarPorEmail(String email) {
-//        return usuarioRepository.findByEmail(email)
-//                .map(usuario -> modelMapper.map(usuario, UsuarioResponseDTO.class));
-//    }
 
     @Transactional
     public Optional<UsuarioResponseDTO> atualizarParcialmente(Long id, UsuarioUpdateDTO updateDTO) {

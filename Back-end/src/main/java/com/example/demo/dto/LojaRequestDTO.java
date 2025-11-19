@@ -12,6 +12,9 @@ public class LojaRequestDTO {
     @Size(max = 200, message = "Nome deve ter no máximo 200 caracteres")
     private String nome;
 
+    @Size(max = 1000, message = "Descrição deve ter no máximo 1000 caracteres")
+    private String descricao;
+
     @Size(max = 500, message = "Endereço deve ter no máximo 500 caracteres")
     private String endereco;
 
@@ -20,4 +23,10 @@ public class LojaRequestDTO {
 
     @Pattern(regexp = "\\d{14}", message = "CNPJ deve ter 14 dígitos")
     private String cnpj;
+
+    @Size(max = 200, message = "Forma de entrega muito longa")
+    private String entrega;
+
+    @Size(max = 500, message = "Formas de pagamento muito longas")
+    private String pagamento;
 }
