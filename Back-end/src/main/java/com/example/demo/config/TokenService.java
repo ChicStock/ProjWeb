@@ -39,10 +39,11 @@ public class TokenService {
                     .build()
                     .verify(token)
                     .getSubject();
-        } catch (JWTCreationException exception) {
-            return "";
+        } catch (Exception e) {
+            return null;
         }
     }
+    
 
 
     private Instant genExpirationDate(){

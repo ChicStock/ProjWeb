@@ -47,13 +47,11 @@ public class ProdutoModel {
     @Builder.Default
     private ProdutoStatus status = ProdutoStatus.ATIVO;
 
-    // Relacionamento com Categoria
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoria_id", nullable = false)
     @NotNull(message = "Categoria é obrigatória")
     private CategoriaModel categoria;
 
-    // Relacionamento com Loja
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "loja_id", nullable = false)
     @NotNull(message = "Loja é obrigatória")

@@ -17,6 +17,7 @@ public interface LojaRepository extends JpaRepository<LojaModel, Long> {
     boolean existsByCnpj(String cnpj);
     boolean existsByCnpjAndIdNot(String cnpj, Long id);
 
+
     List<LojaModel> findByStatusLoja(StatusLoja status, Sort sort);
     List<LojaModel> findByNomeContaining(String nome, Sort sort);
 

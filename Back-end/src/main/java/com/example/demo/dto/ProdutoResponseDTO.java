@@ -19,11 +19,9 @@ public class ProdutoResponseDTO {
     private String imgUrl;
     private ProdutoStatus status;
 
-    // Dados da categoria
     private Long categoriaId;
     private String nomeCategoria;
 
-    // Dados da loja
     private Long lojaId;
     private String nomeLoja;
 
