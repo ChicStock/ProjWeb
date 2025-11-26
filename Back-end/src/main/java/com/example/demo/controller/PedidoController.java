@@ -11,6 +11,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -25,6 +27,16 @@ public class PedidoController {
 
     private final PedidoService pedidoService;
 
+    @GetMapping("/meus-pedidos")
+    @Operation(summary = "Listar pedidos do usuário logado")
+    public ResponseEntity<List<PedidoResponseDTO>> listarMeusPedidos(
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        List<PedidoResponseDTO> pedidos = pedidoService.listarPorUsuario(userDetails.getUsername());
+        return ResponseEntity.ok(pedidos);
+    }
+
+
     @PostMapping
     @Operation(summary = "Criar novo pedido")
     @ApiResponses(value = {
@@ -38,7 +50,7 @@ public class PedidoController {
     }
 
     @GetMapping
-    @Operation(summary = "Listar pedidos com ordenação dinâmica")
+    @Operation(summary = "Listar pedidos com ordenação dinâmica (Admin)")
     public ResponseEntity<List<PedidoResponseDTO>> listarPedidos(
             @RequestParam(required = false) String[] sort,
             @RequestParam(required = false) String[] sortDir) {
@@ -80,11 +92,6 @@ public class PedidoController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Excluir pedido")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Pedido excluído com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Confirmação não fornecida"),
-            @ApiResponse(responseCode = "404", description = "Pedido não encontrado")
-    })
     public ResponseEntity<Void> excluirPedido(
             @PathVariable Long id,
             @RequestParam(defaultValue = "false") boolean confirm) {

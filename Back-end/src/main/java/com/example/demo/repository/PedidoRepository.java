@@ -1,7 +1,7 @@
 package com.example.demo.repository;
 
 import com.example.demo.model.PedidoModel;
-import com.example.demo.model.PedidoStatus; // Verifique se o import está correto
+import com.example.demo.model.PedidoStatus;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,4 +21,6 @@ public interface PedidoRepository extends JpaRepository<PedidoModel, Long> {
 
     @Query("SELECT prod.nome, COUNT(prod) FROM PedidoModel p JOIN p.produtos prod WHERE p.loja.id = :lojaId GROUP BY prod.nome ORDER BY COUNT(prod) DESC")
     List<Object[]> buscarProdutosMaisVendidos(@Param("lojaId") Long lojaId);
+
+    List<PedidoModel> findByUsuarioEmailOrderByDataDesc(String email);
 }

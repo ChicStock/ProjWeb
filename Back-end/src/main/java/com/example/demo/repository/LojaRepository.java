@@ -2,6 +2,7 @@ package com.example.demo.repository;
 
 import com.example.demo.model.LojaModel;
 import com.example.demo.model.StatusLoja;
+import com.example.demo.model.UsuarioModel;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,7 +18,6 @@ public interface LojaRepository extends JpaRepository<LojaModel, Long> {
     boolean existsByCnpj(String cnpj);
     boolean existsByCnpjAndIdNot(String cnpj, Long id);
 
-
     List<LojaModel> findByStatusLoja(StatusLoja status, Sort sort);
     List<LojaModel> findByNomeContaining(String nome, Sort sort);
 
@@ -26,5 +26,6 @@ public interface LojaRepository extends JpaRepository<LojaModel, Long> {
 
     @Query("SELECT COUNT(p) FROM LojaModel l LEFT JOIN l.produtos p WHERE l.id = :lojaId")
     Integer countProdutosByLojaId(Long lojaId);
-}
 
+    LojaModel findByUsuario(UsuarioModel usuario);
+}
