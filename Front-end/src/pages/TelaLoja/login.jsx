@@ -29,16 +29,22 @@ function Login () {
     };
 
     try {
-
       const response = await axios.post('http://localhost:8080/auth/login', dadosParaEnvio);
 
       const token = response.data.token || response.data;
 
+      const lojaId = response.data.lojaId; 
+
       if (token) {
- 
         localStorage.setItem('authToken', token);
         
-        navigate('/Telainicial'); 
+        if (lojaId) {
+            localStorage.setItem('lojaId', lojaId);
+        } else {
+            localStorage.removeItem('lojaId');
+        }
+
+        navigate('/'); 
       } else {
         alert('Erro estranho: Login deu certo (200 OK), mas não veio token.');
       }
@@ -49,7 +55,6 @@ function Login () {
       let msg = 'Falha no login.';
 
       if (error.response) {
-
         if (error.response.status === 403 || error.response.status === 401) {
             msg = 'Email ou senha incorretos.';
         } else {

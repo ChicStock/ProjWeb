@@ -41,6 +41,14 @@ const CadastrarLoja = () => {
       
       const novaLojaId = response.data.id; 
 
+      if (novaLojaId) {
+
+          localStorage.setItem('lojaId', novaLojaId);
+
+          window.dispatchEvent(new Event('auth-update'));
+      }
+
+
       alert('Loja criada com sucesso!');
       navigate(`/personalizarLoja/${novaLojaId}`); 
 

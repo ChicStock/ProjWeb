@@ -1,134 +1,177 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Navbar.css"; 
-import Logo2 from "../../assets/Logo2.png";   
-import { BsBag } from "react-icons/bs";
-import { IoMdSearch } from "react-icons/io";
-import { NavDropdown, Offcanvas, Button, Card } from "react-bootstrap"; 
-import { Link, useNavigate } from "react-router-dom"; 
+import Logo2 from "../../assets/Logo1.png"; 
+import { FiSearch, FiShoppingBag, FiUser, FiLogOut, FiX, FiTrash2 } from "react-icons/fi";
+import { Link, useNavigate, useLocation } from "react-router-dom"; 
+import { useCart } from "./Carrinho";
 
 function Navbar() {
-  const [showSacola, setShowSacola] = useState(false);
-  
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleClose = () => setShowSacola(false);
-  const handleShow = () => setShowSacola(true);
+  const { cartItems, removeFromCart, cartTotal, cartCount } = useCart();
+  
+  const [menuAberto, setMenuAberto] = useState(false);
+  const [sacolaAberta, setSacolaAberta] = useState(false);
 
-  const irParaFinalizarPedido = () => {
-    handleClose();
-    navigate("/FinalizarPedido");
+  const [usuarioLogado, setUsuarioLogado] = useState(() => !!localStorage.getItem('authToken'));
+  const [temLoja, setTemLoja] = useState(() => !!localStorage.getItem('lojaId'));
+
+  useEffect(() => {
+    const verificarAuth = () => {
+        const token = localStorage.getItem('authToken');
+        const lojaId = localStorage.getItem('lojaId');
+        setUsuarioLogado(!!token);
+        setTemLoja(!!lojaId);
+    };
+
+    window.addEventListener('auth-update', verificarAuth);
+    window.addEventListener('storage', verificarAuth);
+
+    return () => {
+        window.removeEventListener('auth-update', verificarAuth);
+        window.removeEventListener('storage', verificarAuth);
+    };
+  }, [location]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('lojaId'); 
+    
+    window.dispatchEvent(new Event('auth-update'));
+    
+    setMenuAberto(false);
+    navigate('/');
   };
 
   return (
-    <> 
-      <header className="navbar"> 
-        <div className="navbar-top">
-          <div className="logo-container">
-            <Link to="/Telainicial">
-                <img src={Logo2} alt="Logo" className="logo2" />
+    <>
+      <header className="navbar-wrapper">
+        <div className="navbar-container">
+          
+          <div className="logo-area">
+            <Link to="/">
+               <img src={Logo2} alt="Logo" className="logo-img" />
             </Link>
           </div>
             
-          <div className="search-bar">
-            <input
-              type="text"
-              placeholder="Busque por produto, categoria ou loja..."
-            />
-            <button>
-              <IoMdSearch/>
-            </button>
+          <div className="search-area">
+            <input type="text" placeholder="Busque por loja..." />
+            <button><FiSearch /></button>
           </div>
 
-          <div className="user-actions">
-            <span>
-              Bem-vindo(a), <b>Usuário</b>
-            </span>
+          <div className="user-area">
+            {usuarioLogado ? (
+               <div className="conta-box" onClick={() => setMenuAberto(!menuAberto)}>
+                  <span className="user-welcome">Minha Conta</span>
+                  <div className="user-avatar"> <FiUser /> </div>
+                  
+                  {menuAberto && (
+                      <div className="nav-dropdown-menu">
+                          <Link to="/perfil" onClick={() => setMenuAberto(false)}>Perfil</Link>
+                          <Link to="/MeusPedidos" onClick={() => setMenuAberto(false)}>Meus Pedidos</Link>
+                          
+                          <div className="nav-divider"></div>
 
-            <NavDropdown
-              title="Minha Conta" 
-              id="basic-nav-dropdown"
-              className="user-dropdown"
-            >
-              <NavDropdown.Item as={Link} to="/perfil">Perfil</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/meus-pedidos">Meus Pedidos</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/CadastrarLoja">Cadastre sua loja</NavDropdown.Item>
-              <NavDropdown.Divider />
-              <NavDropdown.Item as={Link} to="/login">Sair</NavDropdown.Item>
-            </NavDropdown>
+                          {temLoja ? (
+                              <Link to="/RelatorioVendas" onClick={() => setMenuAberto(false)}>
+                                  Painel Lojista
+                              </Link>
+                          ) : (
+                              <Link to="/CadastrarLoja" onClick={() => setMenuAberto(false)}>
+                                  Abra sua Loja
+                              </Link>
+                          )}
+                          
+                          <div className="nav-divider"></div>
+                          
+                          <button onClick={handleLogout} className="btn-nav-logout">
+                              <FiLogOut /> Sair
+                          </button>
+                      </div>
+                  )}
+               </div>
+            ) : (
+               <Link to="/login" className="btn-nav-login">Entrar</Link>
+            )}
 
-            <BsBag 
-              size={22} 
-              className="ms-3" 
-              style={{ cursor: "pointer" }}
-              onClick={handleShow} 
-            />
+            <div className="bag-icon" onClick={() => setSacolaAberta(true)}>
+               <FiShoppingBag size={22} />
+               {cartCount > 0 && <span className="bag-badge">{cartCount}</span>}
+            </div>
           </div>
         </div>
 
-        <nav className="navbar-bottom">
-          <Link to="#">Jeans</Link>
+        <nav className="bottom-links">
           <Link to="#">Feminino</Link>
           <Link to="#">Masculino</Link>
           <Link to="#">Infantil</Link>
-          <Link to="#">Moda praia</Link>
-          <Link to="#">Esportivo</Link>
-          <Link to="#">Beleza</Link>
+          <Link to="#">Jeans</Link>
+          <Link to="#">Moda Praia</Link>
         </nav>
       </header>
 
-      <Offcanvas show={showSacola} onHide={handleClose} placement="end">
-        <Offcanvas.Header closeButton>
-          <Offcanvas.Title>SACOLA</Offcanvas.Title>
-        </Offcanvas.Header>
+      <div 
+        className={`sacola-overlay ${sacolaAberta ? 'visivel' : ''}`} 
+        onClick={() => setSacolaAberta(false)}
+      ></div>
 
-        <Offcanvas.Body>
-          <Card className="p-3 shadow-sm">
-            <h6>
-              NERD’S – SOROCABA {" "}
-              <span className="text-muted float-end" style={{ fontSize: '0.8rem' }}>Ver Loja</span>
-            </h6>
+      <div className={`sacola-sidebar ${sacolaAberta ? 'aberta' : ''}`}>
+        <div className="sacola-header">
+            <h3>Sua Sacola ({cartCount})</h3>
+            <button onClick={() => setSacolaAberta(false)} className="btn-fechar-sacola">
+                <FiX size={24}/>
+            </button>
+        </div>
 
-            <div className="d-flex justify-content-between mt-3">
-              <p>1x Blusa do Goku</p>
-              <p>R$ 47,00</p>
+        <div className="sacola-body">
+            {cartItems.length > 0 ? (
+                cartItems.map((item) => (
+                    <div key={`${item.id}-${item.tamanho}`} className="sacola-item">
+                        <div className="sacola-item-info">
+                            <h4>{item.nome}</h4>
+                            <div className="sacola-detalhes-sub">
+                                <span>{item.lojaNome}</span>
+                                <span className="badge-tam">{item.tamanho}</span>
+                                <span className="badge-qtd">x{item.quantidade}</span>
+                            </div>
+                            <strong>
+                                {(item.preco * item.quantidade).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                            </strong>
+                        </div>
+                        <button 
+                            className="btn-trash"
+                            onClick={() => removeFromCart(item.id, item.tamanho)}
+                        >
+                            <FiTrash2 />
+                        </button>
+                    </div>
+                ))
+            ) : (
+                <div className="sacola-vazia">
+                    <FiShoppingBag size={40} color="#ddd"/>
+                    <p>Sua sacola está vazia.</p>
+                </div>
+            )}
+        </div>
+
+        <div className="sacola-footer">
+            <div className="resumo-linha">
+                <span>Total</span>
+                <strong>{cartTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</strong>
             </div>
-
-            <p className="text-muted small">
-              Blusa feita de algodão com costura feita à mão e com o desenho do personagem Goku.
-            </p>
-
-            <hr />
-
-            <div className="d-flex justify-content-between">
-              <span>Sub Total</span>
-              <span>R$ 47,00</span>
-            </div>
-            <div className="d-flex justify-content-between">
-              <span>Taxa de Serviço</span>
-              <span>R$ 0,99</span>
-            </div>
-            <div className="d-flex justify-content-between">
-              <span>Taxa de Entrega</span>
-              <span className="text-success">Grátis</span>
-            </div>
-
-            <hr />
-
-            <div className="d-flex justify-content-between fw-bold">
-              <span>Total</span>
-              <span>R$ 47,99</span>
-            </div>
-
-            <Button 
-                className="w-100 mt-3 btn-pagamento" 
-                variant="primary"
-                onClick={irParaFinalizarPedido}
+            <button 
+                className="btn-finalizar" 
+                onClick={() => {
+                    setSacolaAberta(false);
+                    navigate("/FinalizarPedido");
+                }}
+                disabled={cartItems.length === 0}
             >
-              Fechar Pedido
-            </Button>
-          </Card>
-        </Offcanvas.Body>
-      </Offcanvas>
+                Fechar Pedido
+            </button>
+        </div>
+      </div>
     </>
   );
 }

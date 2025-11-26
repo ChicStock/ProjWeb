@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.dto.PedidoRequestDTO;
 import com.example.demo.dto.PedidoResponseDTO;
 import com.example.demo.dto.ProdutoQuantidadeDTO;
+import com.example.demo.dto.ProdutoResponseDTO; // Importe o DTO de Produto
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.*;
 import com.example.demo.repository.LojaRepository;
@@ -36,6 +37,14 @@ public class PedidoService {
     private final UsuarioRepository usuarioRepository;
     private final LojaRepository lojaRepository;
     private final ModelMapper modelMapper;
+
+    public List<PedidoResponseDTO> listarPorUsuario(String emailUsuario) {
+        List<PedidoModel> pedidos = pedidoRepository.findByUsuarioEmailOrderByDataDesc(emailUsuario);
+
+        return pedidos.stream()
+                .map(this::convertToResponseDTO)
+                .collect(Collectors.toList());
+    }
 
     @Transactional
     public PedidoResponseDTO criarPedido(PedidoRequestDTO pedidoRequestDTO) {
@@ -75,36 +84,14 @@ public class PedidoService {
     }
 
     public List<PedidoResponseDTO> listarTodos(String[] sort, String[] sortDir) {
-        Sort ordenacao = Sort.unsorted();
-
-        if (sort != null && sortDir != null && sort.length == sortDir.length) {
-            for (int i = 0; i < sort.length; i++) {
-                ordenacao = ordenacao.and(
-                        Sort.by(sortDir[i].equalsIgnoreCase("desc") ?
-                                        Sort.Direction.DESC : Sort.Direction.ASC,
-                                sort[i])
-                );
-            }
-        }
-
+        Sort ordenacao = criarOrdenacao(sort, sortDir);
         return pedidoRepository.findAll(ordenacao).stream()
                 .map(this::convertToResponseDTO)
                 .collect(Collectors.toList());
     }
 
     public Page<PedidoResponseDTO> listarComPaginacao(int page, int size, String[] sort, String[] sortDir) {
-        Sort ordenacao = Sort.unsorted();
-
-        if (sort != null && sortDir != null && sort.length == sortDir.length) {
-            for (int i = 0; i < sort.length; i++) {
-                ordenacao = ordenacao.and(
-                        Sort.by(sortDir[i].equalsIgnoreCase("desc") ?
-                                        Sort.Direction.DESC : Sort.Direction.ASC,
-                                sort[i])
-                );
-            }
-        }
-
+        Sort ordenacao = criarOrdenacao(sort, sortDir);
         Pageable pageable = PageRequest.of(page, size, ordenacao);
 
         return pedidoRepository.findAll(pageable)
@@ -138,30 +125,23 @@ public class PedidoService {
         if (!confirm) {
             throw new IllegalArgumentException("É necessário confirmar a exclusão com ?confirm=true");
         }
-
         if (!pedidoRepository.existsById(id)) {
             throw new ResourceNotFoundException("Pedido não encontrado com ID " + id);
         }
-
         pedidoRepository.deleteById(id);
         log.info("🗑️ Pedido excluído com sucesso (ID: {})", id);
     }
 
     private PedidoResponseDTO convertToResponseDTO(PedidoModel pedido) {
-        String resumo = "";
-        if (pedido.getProdutos() != null && !pedido.getProdutos().isEmpty()) {
-            resumo = pedido.getProdutos().stream()
-                    .limit(2)
-                    .map(ProdutoModel::getNome)
-                    .collect(Collectors.joining(", "));
 
-            if (pedido.getProdutos().size() > 2) {
-                resumo += "...";
-            }
-        } else {
-            resumo = "Sem itens";
+        List<ProdutoResponseDTO> itensDTO = new ArrayList<>();
+        if (pedido.getProdutos() != null) {
+            itensDTO = pedido.getProdutos().stream()
+                    .map(prod -> modelMapper.map(prod, ProdutoResponseDTO.class))
+                    .collect(Collectors.toList());
         }
 
+        String nomeLoja = (pedido.getLoja() != null) ? pedido.getLoja().getNome() : "Loja Desconhecida";
         String nomeCliente = "Cliente Removido";
         String telefoneCliente = "";
         if (pedido.getUsuario() != null) {
@@ -176,7 +156,22 @@ public class PedidoService {
                 .data(pedido.getData())
                 .nomeCliente(nomeCliente)
                 .telefoneCliente(telefoneCliente)
-                .resumoItens(resumo)
+                .nomeLoja(nomeLoja)
+                .itens(itensDTO)
                 .build();
+    }
+
+    private Sort criarOrdenacao(String[] sort, String[] sortDir) {
+        Sort ordenacao = Sort.unsorted();
+        if (sort != null && sortDir != null && sort.length == sortDir.length) {
+            for (int i = 0; i < sort.length; i++) {
+                ordenacao = ordenacao.and(
+                        Sort.by(sortDir[i].equalsIgnoreCase("desc") ?
+                                        Sort.Direction.DESC : Sort.Direction.ASC,
+                                sort[i])
+                );
+            }
+        }
+        return ordenacao;
     }
 }

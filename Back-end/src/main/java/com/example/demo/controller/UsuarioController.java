@@ -1,14 +1,14 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.*;
-import com.example.demo.model.UsuarioModel;
 import com.example.demo.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal; // IMPORTANTE
+import org.springframework.security.core.userdetails.UserDetails; // IMPORTANTE
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -22,6 +22,25 @@ import java.util.Optional;
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+
+
+    @GetMapping("/me")
+    @Operation(summary = "Obter dados do usuário logado (Perfil)")
+    public ResponseEntity<UsuarioResponseDTO> obterMeuPerfil(@AuthenticationPrincipal UserDetails userDetails) {
+        UsuarioResponseDTO response = usuarioService.buscarPerfil(userDetails.getUsername());
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/me")
+    @Operation(summary = "Atualizar dados do usuário logado e endereço")
+    public ResponseEntity<UsuarioResponseDTO> atualizarMeuPerfil(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody UsuarioUpdateDTO dados) {
+
+        UsuarioResponseDTO response = usuarioService.atualizarPerfil(userDetails.getUsername(), dados);
+        return ResponseEntity.ok(response);
+    }
+
 
     @PostMapping
     @Operation(summary = "Criar novo usuário")
@@ -49,15 +68,8 @@ public class UsuarioController {
         return usuario.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
-//    @GetMapping("/email/{email}")
-//    @Operation(summary = "Buscar usuário por email")
-//    public ResponseEntity<UsuarioResponseDTO> buscarPorEmail(@PathVariable String email) {
-//        Optional<UsuarioResponseDTO> usuario = usuarioService.buscarPorEmail(email);
-//        return usuario.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
-//    }
-
     @PatchMapping("/{id}")
-    @Operation(summary = "Atualizar usuário parcialmente")
+    @Operation(summary = "Atualizar usuário parcialmente (Admin ou ID específico)")
     public ResponseEntity<UsuarioResponseDTO> atualizarParcialmente(
             @PathVariable Long id,
             @RequestBody @Valid UsuarioUpdateDTO updateDTO) {
@@ -76,14 +88,4 @@ public class UsuarioController {
         boolean deletado = usuarioService.deletar(id);
         return deletado ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
-
-//    @GetMapping("/listarPorId/{id}")
-//    @Operation(summary = "Listar usuário por ID (modelo bruto)")
-//    public ResponseEntity<Optional<UsuarioModel>> listarPorId(@PathVariable Long id) {
-//        Optional<UsuarioModel> optional = usuarioService.listarPorId(id);
-//        if (optional.isPresent()) {
-//            return ResponseEntity.ok(optional);
-//        }
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-//    }
 }

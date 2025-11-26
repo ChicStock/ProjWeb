@@ -14,4 +14,5 @@ public class UsuarioResponseDTO {
     private String cpf;
     private String telefone;
     private StatusUsuario status;
+    private EnderecoDTO endereco;
 }

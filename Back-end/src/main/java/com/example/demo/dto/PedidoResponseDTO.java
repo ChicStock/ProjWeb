@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -20,4 +21,7 @@ public class PedidoResponseDTO {
     private String nomeCliente;
     private String telefoneCliente;
     private String resumoItens;
+
+    private String nomeLoja;
+    private List<ProdutoResponseDTO> itens;
 }
