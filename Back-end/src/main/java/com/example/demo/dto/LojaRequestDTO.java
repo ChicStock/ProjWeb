@@ -29,4 +29,6 @@ public class LojaRequestDTO {
 
     @Size(max = 500, message = "Formas de pagamento muito longas")
     private String pagamento;
+
+    private String imgUrl;
 }

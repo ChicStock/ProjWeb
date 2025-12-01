@@ -4,7 +4,6 @@ import axios from "axios";
 import Navbar from "./Navbar"; 
 import "./TelaLoja.css";
 import { useCart } from "./Carrinho";
-import LojaDefault from "../../assets/loja2.png"; 
 import { FiMapPin, FiPhone, FiInstagram, FiClock, FiCreditCard, FiShoppingBag, FiArrowLeft, FiTag, FiX, FiMinus, FiPlus } from "react-icons/fi";
 
 const CATEGORIAS = {
@@ -12,20 +11,19 @@ const CATEGORIAS = {
     5: "Short", 6: "Moda Praia", 7: "Beleza", 8: "Jaqueta", 9: "Infantil"
 };
 
+const API_URL = "http://localhost:8080";
+
 function TelaLoja() {
   const { id } = useParams(); 
   const { addToCart } = useCart();
-
   const [loja, setLoja] = useState(null);
   const [produtos, setProdutos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   const [produtoSelecionado, setProdutoSelecionado] = useState(null);
   const [tamanhoSelecionado, setTamanhoSelecionado] = useState("");
   const [quantidade, setQuantidade] = useState(1);
-  const [estoqueDisponivel, setEstoqueDisponivel] = useState({}); 
-
+  const [estoqueDisponivel, setEstoqueDisponivel] = useState({});
   const limparDescricao = (descricaoCompleta) => {
       if (!descricaoCompleta) return "";
       return descricaoCompleta.split('[Estoque]:')[0].trim();
@@ -74,18 +72,17 @@ function TelaLoja() {
       addToCart(produtoSelecionado, tamanhoFinal, quantidade, loja.nome, loja.id);
       
       fecharModal();
-
   };
 
   useEffect(() => {
     const fetchDados = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`http://localhost:8080/api/v1/lojas/${id}`);
+        const response = await axios.get(`${API_URL}/api/v1/lojas/${id}`);
         setLoja(response.data);
 
         try {
-            const prodResponse = await axios.get(`http://localhost:8080/api/v1/produtos/loja/${id}`);
+            const prodResponse = await axios.get(`${API_URL}/api/v1/produtos/loja/${id}`);
             setProdutos(prodResponse.data || []); 
         } catch (prodError) {
             setProdutos([]); 
@@ -114,8 +111,14 @@ function TelaLoja() {
 
         <header className="loja-header-card">
           <div className="loja-image-box">
-            <img src={LojaDefault} alt={loja.nome} className="loja-main-img" />
+            <img 
+                src={loja.imgUrl ? `${API_URL}${loja.imgUrl}` : LojaDefault} 
+                alt={loja.nome} 
+                className="loja-main-img" 
+                onError={(e) => { e.target.src = LojaDefault; }}
+            />
           </div>
+          
           <div className="loja-info-box">
             <div className="loja-title-area">
                 <h1 className="loja-title">{loja.nome}</h1>
@@ -170,10 +173,15 @@ function TelaLoja() {
                 <div key={prod.id} className="produto-card">
                     <div className="produto-img-placeholder">
                         {prod.imgUrl && !prod.imgUrl.includes("placeholder") ? (
-                            <img src={prod.imgUrl} alt={prod.nome} />
+                            <img 
+                                src={`${API_URL}${prod.imgUrl}`} 
+                                alt={prod.nome} 
+                                onError={(e) => e.target.style.display='none'}
+                            />
                         ) : (
                             <FiShoppingBag size={35} color="#ccc"/>
                         )}
+                        
                         {prod.categoriaId && CATEGORIAS[prod.categoriaId] && (
                             <span className="categoria-tag">{CATEGORIAS[prod.categoriaId]}</span>
                         )}
@@ -216,7 +224,10 @@ function TelaLoja() {
                   <div className="modal-produto-body">
                       <div className="modal-img-area">
                         {produtoSelecionado.imgUrl && !produtoSelecionado.imgUrl.includes("placeholder") ? (
-                            <img src={produtoSelecionado.imgUrl} alt={produtoSelecionado.nome} />
+                            <img 
+                                src={`${API_URL}${produtoSelecionado.imgUrl}`} 
+                                alt={produtoSelecionado.nome} 
+                            />
                         ) : (
                             <div className="modal-placeholder-icon">
                                 <FiShoppingBag size={60} color="#ddd"/>

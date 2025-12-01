@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
-import "./CadastroProduto.css"; // Importação direta do CSS
-import logosite from "../../assets/logo2teste.png";
+import "./CadastroProduto.css";
 import { FiUploadCloud, FiCamera, FiArrowLeft, FiMinus, FiPlus, FiCheck } from "react-icons/fi"; 
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+
+const API_URL = "http://localhost:8080";
 
 function Cadastroproduto() {
   const navigate = useNavigate();
@@ -11,7 +12,6 @@ function Cadastroproduto() {
 
   const [lojaId, setLojaId] = useState(null);
 
-  // Moldes de tamanho
   const moldes = {
     letras: ["PP", "P", "M", "G", "GG", "XG"],
     numeros: ["34", "36", "38", "40", "42", "44", "46", "48"],
@@ -26,23 +26,22 @@ function Cadastroproduto() {
     categoriaId: "",
     descricao: "",
     valor: "",
-    imgUrl: "",
-    foto: null,
+    fotoArquivo: null,
     preview: null 
   });
 
-  // Busca Loja ID ao carregar
   useEffect(() => {
       const fetchLoja = async () => {
           const token = localStorage.getItem('authToken');
           if(!token) return;
           try {
-              const response = await axios.get('http://localhost:8080/api/v1/dashboard/resumo', {
+              const response = await axios.get(`${API_URL}/api/v1/usuarios/me`, {
                   headers: { Authorization: `Bearer ${token}` }
               });
-              if(response.data && response.data.idLoja) {
-                  setLojaId(response.data.idLoja);
-              }
+
+              const idSalvo = localStorage.getItem('lojaId');
+              if (idSalvo) setLojaId(idSalvo);
+
           } catch (error) { console.error(error); }
       };
       fetchLoja();
@@ -51,13 +50,15 @@ function Cadastroproduto() {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setProduto({ ...produto, foto: file, preview: URL.createObjectURL(file) });
+      setProduto({ 
+          ...produto, 
+          fotoArquivo: file,
+          preview: URL.createObjectURL(file) 
+      });
     }
   };
 
   const triggerFileInput = () => fileInputRef.current.click();
-
-  // --- LÓGICA DE ESTOQUE ---
   const selecionarMolde = (tipo) => {
       setTipoTamanho(tipo);
       const novoEstoque = {};
@@ -80,7 +81,7 @@ function Cadastroproduto() {
   const handleSubmit = async () => {
     const token = localStorage.getItem('authToken');
     if (!token) { alert("Logue novamente."); return; }
-    if (!lojaId) { alert("Loja não identificada."); return; }
+    if (!lojaId) { alert("Loja não identificada. Tente recarregar ou logar novamente."); return; }
 
     const estoqueTotal = calcularEstoqueTotal();
 
@@ -95,29 +96,33 @@ function Cadastroproduto() {
     }
 
     const valorFormatado = produto.valor.toString().replace(',', '.');
-    
-    // Salva o detalhe na descrição (gambiarra temporária funcional)
+
     const descricaoComEstoque = `${produto.descricao}\n\n[Estoque]: ${JSON.stringify(estoqueDetalhado)}`;
 
-    const payload = {
-        nome: produto.nome,
-        descricao: descricaoComEstoque,
-        preco: parseFloat(valorFormatado),
-        quantidade: estoqueTotal, 
-        imgUrl: "http://placeholder.com/img",
-        categoriaId: parseInt(produto.categoriaId),
-        lojaId: lojaId
-    };
+    const formData = new FormData();
+    formData.append("nome", produto.nome);
+    formData.append("descricao", descricaoComEstoque);
+    formData.append("preco", parseFloat(valorFormatado));
+    formData.append("quantidade", estoqueTotal);
+    formData.append("categoriaId", parseInt(produto.categoriaId));
+    formData.append("lojaId", lojaId);
+
+    if (produto.fotoArquivo) {
+        formData.append("imagem", produto.fotoArquivo);
+    }
 
     try {
-        await axios.post('http://localhost:8080/api/v1/produtos', payload, {
-            headers: { Authorization: `Bearer ${token}` }
+        await axios.post(`${API_URL}/api/v1/produtos`, formData, {
+            headers: { 
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "multipart/form-data"
+            }
         });
         alert("Produto cadastrado com sucesso!");
-        navigate('/RelatorioVendas'); 
+        navigate('/RelatorioVendas');
     } catch (error) {
-        console.error(error);
-        alert("Erro ao cadastrar.");
+        console.error("Erro no cadastro:", error);
+        alert("Erro ao cadastrar produto.");
     }
   };
 
@@ -127,17 +132,13 @@ function Cadastroproduto() {
         <FiArrowLeft /> Voltar
       </button>
 
-      <div className="logo-externo">
-        <img src={logosite} alt="Chic Stock" />
-      </div>
-
       <div className="container">
         
         <div className="form-section">
           <h2 className="titulo">Cadastrar Produto</h2>
           <p className="subtitulo">Defina os detalhes e o estoque por tamanho</p>
           
-          <form className="form">
+          <form className="form" onSubmit={(e) => e.preventDefault()}>
             
             <div className="input-group">
                 <label>Nome do Produto</label>
@@ -171,7 +172,6 @@ function Cadastroproduto() {
                 </div>
             </div>
 
-            {/* SEÇÃO DE TAMANHOS */}
             <div className="secao-tamanhos">
                 <label>Formato de Tamanho:</label>
                 <div className="lista-formatos">
@@ -199,7 +199,6 @@ function Cadastroproduto() {
                 </div>
             </div>
 
-            {/* GRID DE ESTOQUE */}
             {tipoTamanho && (
                 <div className="secao-estoque">
                     <div className="header-estoque">
@@ -237,7 +236,6 @@ function Cadastroproduto() {
           </form>
         </div>
 
-        {/* COLUNA DIREITA */}
         <div className="imagem-section">
           <div className="imagem-card" onClick={triggerFileInput}>
             <input type="file" accept="image/*" style={{ display: "none" }} ref={fileInputRef} onChange={handleImageChange} />

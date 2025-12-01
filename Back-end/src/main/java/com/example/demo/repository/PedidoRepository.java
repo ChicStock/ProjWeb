@@ -23,4 +23,7 @@ public interface PedidoRepository extends JpaRepository<PedidoModel, Long> {
     List<Object[]> buscarProdutosMaisVendidos(@Param("lojaId") Long lojaId);
 
     List<PedidoModel> findByUsuarioEmailOrderByDataDesc(String email);
+
+    @Query("SELECT COUNT(p) FROM PedidoModel p WHERE p.loja.id = :lojaId AND (p.pedidoStatus = 'PAGO' OR p.pedidoStatus = 'ENTREGUE')")
+    Long contarPedidosPagosEEntregues(@Param("lojaId") Long lojaId);
 }

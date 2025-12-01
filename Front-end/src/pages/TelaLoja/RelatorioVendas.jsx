@@ -3,17 +3,30 @@ import { useNavigate } from 'react-router-dom';
 import './RelatorioVendas.css';
 import axios from 'axios'; 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { FiDollarSign, FiShoppingBag, FiClock, FiCalendar, FiPlus, FiSettings, FiArrowLeft, FiLoader, FiChevronDown, FiUser, FiLogOut, FiHome, FiBox, FiEdit3, FiSave, FiX, FiMinus, FiTrash2 } from 'react-icons/fi'; 
+import { FiDollarSign, FiShoppingBag, FiClock, FiCalendar, FiPlus, FiSettings, FiArrowLeft, FiLoader, FiChevronDown, FiUser, FiLogOut, FiHome, FiBox, FiEdit3, FiSave, FiX, FiMinus, FiTrash2, FiEye, FiCheck } from 'react-icons/fi'; 
+
+const API_URL = "http://localhost:8080";
+
+const STATUS_OPCOES = [
+    { value: "PAGAMENTO_PENDENTE", label: "Aguardando Pagamento" },
+    { value: "PAGO", label: "Pago / A Caminho" },
+    { value: "ENTREGUE", label: "Entregue" }
+];
 
 const RelatorioVendas = () => {
   const navigate = useNavigate();
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState(null);
+
   const [menuAberto, setMenuAberto] = useState(false);
+
   const [produtoExpandido, setProdutoExpandido] = useState(null);
   const [estoqueTemp, setEstoqueTemp] = useState({}); 
   const [precoTemp, setPrecoTemp] = useState(""); 
+
+  const [statusEditando, setStatusEditando] = useState(null);
+  const [novoStatus, setNovoStatus] = useState(""); 
 
   useEffect(() => {
     carregarDados();
@@ -23,7 +36,7 @@ const RelatorioVendas = () => {
     const token = localStorage.getItem('authToken');
     if (!token) { navigate('/login'); return; }
     try {
-        const response = await axios.get('http://localhost:8080/api/v1/dashboard/resumo', {
+        const response = await axios.get(`${API_URL}/api/v1/dashboard/resumo`, {
             headers: { Authorization: `Bearer ${token}` }
         });
         setDashboardData(response.data);
@@ -62,31 +75,24 @@ const RelatorioVendas = () => {
   const excluirProduto = async (idProduto) => {
       const confirmacao = window.confirm("Tem certeza que deseja excluir este produto?");
       if (!confirmacao) return;
-
       const token = localStorage.getItem('authToken');
       try {
-          await axios.delete(`http://localhost:8080/api/v1/produtos/${idProduto}?confirm=true`, {
+          await axios.delete(`${API_URL}/api/v1/produtos/${idProduto}?confirm=true`, {
               headers: { Authorization: `Bearer ${token}` }
           });
-
           const novoDashboard = { ...dashboardData };
           novoDashboard.estoque = novoDashboard.estoque.filter(p => p.id !== idProduto);
           setDashboardData(novoDashboard);
-          
           alert("Produto excluído.");
-
       } catch (error) {
-          console.error("Erro ao excluir:", error);
           alert("Erro ao excluir produto.");
       }
   };
 
   const salvarAlteracoes = async (produtoOriginal) => {
       const novaQtdTotal = Object.values(estoqueTemp).reduce((a, b) => a + b, 0);
-      
       let descBase = produtoOriginal.descricao ? produtoOriginal.descricao.split('[Estoque]:')[0].trim() : "";
       const novaDescricao = `${descBase}\n\n[Estoque]: ${JSON.stringify(estoqueTemp)}`;
-
       const novoPreco = parseFloat(precoTemp.toString().replace(',', '.'));
 
       const payload = {
@@ -99,11 +105,10 @@ const RelatorioVendas = () => {
 
       try {
           const token = localStorage.getItem('authToken');
-          
-          await axios.patch(`http://localhost:8080/api/v1/produtos/${produtoOriginal.id}`, payload, {
+          await axios.patch(`${API_URL}/api/v1/produtos/${produtoOriginal.id}`, payload, {
               headers: { Authorization: `Bearer ${token}` }
           });
-          
+
           const novoDashboard = { ...dashboardData };
           const prodIndex = novoDashboard.estoque.findIndex(p => p.id === produtoOriginal.id);
           if (prodIndex >= 0) {
@@ -114,22 +119,48 @@ const RelatorioVendas = () => {
           setDashboardData(novoDashboard);
           setProdutoExpandido(null);
           alert("Alterações salvas!");
+      } catch (error) {
+          alert("Erro ao atualizar.");
+      }
+  };
+
+  const iniciarEdicaoStatus = (pedido) => {
+      setStatusEditando(pedido.id);
+      setNovoStatus(pedido.pedidoStatus);
+  };
+
+const salvarStatusPedido = async (pedidoId) => {
+      const token = localStorage.getItem('authToken');
+      try {
+          const payload = {
+              pedidoStatus: novoStatus
+          };
+
+          await axios.put(`${API_URL}/api/v1/pedidos/${pedidoId}`, payload, {
+              headers: { Authorization: `Bearer ${token}` }
+          });
+
+          await carregarDados(); 
+          
+          setStatusEditando(null);
 
       } catch (error) {
-          console.error("Erro ao salvar:", error);
-          let msg = "Erro ao atualizar.";
-          if (error.response && error.response.data) {
-             msg += " " + JSON.stringify(error.response.data);
-          }
-          alert(msg);
+          console.error("Erro ao mudar status", error);
+          alert("Erro ao atualizar status.");
       }
   };
 
   const irParaCadastroProduto = () => navigate('/cadastroProduto');
   const irParaHome = () => navigate('/Telainicial');
   const irParaEditarLoja = () => navigate(`/personalizarLoja/${dashboardData?.idLoja || 1}`);
+  const irParaVerLoja = () => navigate(`/loja/${dashboardData?.idLoja}`);
+  
   const fazerLogout = () => { localStorage.removeItem('authToken'); navigate('/login'); };
-  const formatarStatusTexto = (s) => s ? s.replace(/_/g, ' ').toLowerCase() : '-';
+  
+  const formatarStatusTexto = (s) => {
+      const opcao = STATUS_OPCOES.find(opt => opt.value === s);
+      return opcao ? opcao.label : s;
+  };
 
   if (loading) return <div className="relatorio-wrapper loading-screen"><FiLoader className="icon-spin" size={40} /><p>Carregando painel...</p></div>;
   if (erro) return <div className="relatorio-wrapper error-screen"><p>{erro}</p><button onClick={irParaHome} className="btn-acao secundario">Voltar para Início</button></div>;
@@ -139,8 +170,7 @@ const RelatorioVendas = () => {
       
       <header className="dashboard-header">
         <div className="header-content">
-            <div className="header-left">
-            </div>
+            <div className="header-left"></div>
             <div className="header-actions">
                 <button className="btn-acao primario" onClick={irParaCadastroProduto}>
                     <FiPlus /> Adicionar Produto
@@ -158,7 +188,9 @@ const RelatorioVendas = () => {
                 <FiChevronDown className={`seta-menu ${menuAberto ? 'aberta' : ''}`} />
                 {menuAberto && (
                     <div className="dropdown-menu">
-                        <button onClick={irParaEditarLoja}><FiUser /> Perfil Loja</button>
+                        {/* --- CORREÇÃO AQUI: Link para a loja pública --- */}
+                        <button onClick={irParaVerLoja}><FiEye /> Ver Minha Loja</button>
+                        {/* ----------------------------------------------- */}
                         <button onClick={irParaHome}><FiHome /> Voltar Início</button>
                         <div className="divisor"></div>
                         <button onClick={fazerLogout} className="logout"><FiLogOut /> Sair</button>
@@ -169,7 +201,7 @@ const RelatorioVendas = () => {
       </header>
 
       <main className="dashboard-content">
-        
+
         <div className="kpi-grid">
             <div className="kpi-card total">
                 <div className="kpi-icon"><FiDollarSign /></div>
@@ -177,10 +209,8 @@ const RelatorioVendas = () => {
             </div>
             <div className="kpi-card pagos">
                 <div className="kpi-icon"><FiShoppingBag /></div>
-                <div className="kpi-info"><span>Pedidos Pagos</span><h3>{dashboardData.pedidosPagos}</h3></div>
+                <div className="kpi-info"><span>Pedidos Pagos e Entregues</span><h3>{dashboardData.pedidosPagos}</h3></div>
             </div>
-            
-            {/* CARD PENDENTES (Onde estava o erro) */}
             <div className="kpi-card pendentes">
                 <div className="kpi-icon"><FiClock /></div>
                 <div className="kpi-info">
@@ -191,7 +221,7 @@ const RelatorioVendas = () => {
         </div>
 
         <div className="dashboard-grid">
-            
+
             <section className="estoque-card">
                 <div className="card-header">
                     <h2>Controle de Produtos</h2>
@@ -228,17 +258,16 @@ const RelatorioVendas = () => {
                                                 </button>
                                             ) : (
                                                 <div className="acoes-grupo">
-                                                    <button className="btn-icon-action editar" onClick={() => abrirEditorEstoque(prod)} title="Editar Estoque e Preço">
+                                                    <button className="btn-icon-action editar" onClick={() => abrirEditorEstoque(prod)} title="Editar">
                                                         <FiEdit3 />
                                                     </button>
-                                                    <button className="btn-icon-action excluir" onClick={() => excluirProduto(prod.id)} title="Excluir Produto">
+                                                    <button className="btn-icon-action excluir" onClick={() => excluirProduto(prod.id)} title="Excluir">
                                                         <FiTrash2 />
                                                     </button>
                                                 </div>
                                             )}
                                         </td>
                                     </tr>
-                                    
                                     {produtoExpandido === prod.id && (
                                         <tr className="linha-detalhe">
                                             <td colSpan="4">
@@ -288,9 +317,7 @@ const RelatorioVendas = () => {
                 <section className="grafico-card">
                     <div className="card-header">
                         <h2>Mais Vendidos</h2>
-                        <div className="periodo-badge">
-                            <FiCalendar /> Geral
-                        </div>
+                        <div className="periodo-badge"><FiCalendar /> Geral</div>
                     </div>
                     <div className="grafico-container">
                         {dashboardData.grafico.length > 0 ? (
@@ -299,10 +326,7 @@ const RelatorioVendas = () => {
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
                                     <XAxis dataKey="nome" axisLine={false} tickLine={false} tick={false} />
                                     <YAxis axisLine={false} tickLine={false} tick={{fill: '#888', fontSize: 12}} />
-                                    <Tooltip 
-                                        cursor={{fill: '#f5f5f5'}} 
-                                        contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'}}
-                                    />
+                                    <Tooltip cursor={{fill: '#f5f5f5'}} contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'}} />
                                     <Bar dataKey="vendas" radius={[4, 4, 0, 0]}>
                                         {dashboardData.grafico.map((entry, index) => (
                                             <Cell key={`cell-${index}`} fill="#9b9490" />
@@ -326,10 +350,10 @@ const RelatorioVendas = () => {
                                 <tr>
                                     <th>Pedido</th>
                                     <th>Cliente</th>
-                                    <th>Data</th>
                                     <th>Itens</th>
                                     <th>Total</th>
                                     <th>Status</th>
+                                    <th>Ação</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -340,12 +364,7 @@ const RelatorioVendas = () => {
                                             <td>
                                                 <div className="cliente-info">
                                                     <strong>{pedido.nomeCliente || "Cliente"}</strong>
-                                                    <small>{pedido.telefoneCliente || ""}</small>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div className="data-info">
-                                                    <span>{pedido.data ? new Date(pedido.data).toLocaleDateString('pt-BR') : "-"}</span>
+                                                    <small>{pedido.data ? new Date(pedido.data).toLocaleDateString('pt-BR') : "-"}</small>
                                                 </div>
                                             </td>
                                             <td>
@@ -356,17 +375,43 @@ const RelatorioVendas = () => {
                                             <td className="col-valor">
                                                 {pedido.valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                                             </td>
+
                                             <td>
-                                                <span className={`status-badge ${pedido.pedidoStatus ? pedido.pedidoStatus.toLowerCase() : ''}`}>
-                                                    {formatarStatusTexto(pedido.pedidoStatus)}
-                                                </span>
+                                                {statusEditando === pedido.id ? (
+                                                    <select 
+                                                        className="select-status-inline"
+                                                        value={novoStatus}
+                                                        onChange={(e) => setNovoStatus(e.target.value)}
+                                                    >
+                                                        {STATUS_OPCOES.map(opt => (
+                                                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                                        ))}
+                                                    </select>
+                                                ) : (
+                                                    <span className={`status-badge ${pedido.pedidoStatus ? pedido.pedidoStatus.toLowerCase() : ''}`}>
+                                                        {formatarStatusTexto(pedido.pedidoStatus)}
+                                                    </span>
+                                                )}
+                                            </td>
+
+                                            <td style={{textAlign: 'center'}}>
+                                                {statusEditando === pedido.id ? (
+                                                    <div className="acoes-status">
+                                                        <button className="btn-check-status" onClick={() => salvarStatusPedido(pedido.id)}><FiCheck /></button>
+                                                        <button className="btn-cancel-status" onClick={() => setStatusEditando(null)}><FiX /></button>
+                                                    </div>
+                                                ) : (
+                                                    <button className="btn-edit-status" onClick={() => iniciarEdicaoStatus(pedido)} title="Alterar Status">
+                                                        <FiEdit3 />
+                                                    </button>
+                                                )}
                                             </td>
                                         </tr>
                                     ))
                                 ) : (
                                     <tr>
                                         <td colSpan="6" style={{textAlign: 'center', padding: '30px', color: '#999'}}>
-                                            Nenhum pedido recente encontrado.
+                                            Nenhum pedido recente.
                                         </td>
                                     </tr>
                                 )}
