@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import Navbar from "./Navbar";
+import Navbar from "./Navbar"; 
 import "./TelaInicial.css";
+
 import LojaDefault from "../../assets/loja2.png";
 import Banner1 from "../../assets/Loja4.png";
 import Banner2 from "../../assets/Loja5.png";
@@ -10,8 +11,11 @@ import Banner3 from "../../assets/ChicStock.png";
 import CadastreBanner from "../../assets/Cadastre.png";
 import { FiArrowRight, FiShoppingBag, FiAlertCircle } from "react-icons/fi";
 
+const API_URL = "http://localhost:8080";
+
 function TelaInicial() {
     const navigate = useNavigate();
+
     const [lojas, setLojas] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -28,7 +32,7 @@ function TelaInicial() {
     useEffect(() => {
         const fetchLojas = async () => {
             try {
-                const response = await axios.get("http://localhost:8080/api/v1/lojas");
+                const response = await axios.get(`${API_URL}/api/v1/lojas`);
                 setLojas(response.data);
             } catch (error) {
                 console.error("Erro ao buscar lojas:", error);
@@ -41,7 +45,6 @@ function TelaInicial() {
 
     const handleBannerClick = () => {
         const token = localStorage.getItem('authToken'); 
-
         if (token) {
             navigate("/CadastrarLoja");
         } else {
@@ -95,7 +98,12 @@ function TelaInicial() {
                         {lojas.length > 0 ? lojas.map((loja) => (
                             <Link to={`/loja/${loja.id}`} key={loja.id} className="card-loja">
                                 <div className="card-image">
-                                    <img src={LojaDefault} alt={loja.nome} />
+                                    <img 
+                                        src={loja.imgUrl ? `${API_URL}${loja.imgUrl}` : LojaDefault} 
+                                        alt={loja.nome} 
+                                        onError={(e) => { e.target.src = LojaDefault; }}
+                                    />
+                                    
                                     <span className="badge-novo">Novo</span>
                                 </div>
                                 <div className="card-info">

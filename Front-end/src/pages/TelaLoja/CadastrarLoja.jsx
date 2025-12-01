@@ -27,34 +27,30 @@ const CadastrarLoja = () => {
         return;
     }
 
-    const dataToSubmit = { 
-        nome: nomeLoja,
-        cnpj: cnpjLimpo 
-    };
-
-    console.log("Enviando:", dataToSubmit);
+    const formData = new FormData();
+    formData.append('nome', nomeLoja);
+    formData.append('cnpj', cnpjLimpo);
 
     try {
-      const response = await axios.post('http://localhost:8080/api/v1/lojas', dataToSubmit, {
-        headers: { Authorization: `Bearer ${token}` }
+      const response = await axios.post('http://localhost:8080/api/v1/lojas', formData, {
+        headers: { 
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data" 
+        }
       });
       
       const novaLojaId = response.data.id; 
 
       if (novaLojaId) {
-
           localStorage.setItem('lojaId', novaLojaId);
-
           window.dispatchEvent(new Event('auth-update'));
       }
 
-
-      alert('Loja criada com sucesso!');
+      alert('Loja criada com sucesso! Agora personalize seu perfil.');
       navigate(`/personalizarLoja/${novaLojaId}`); 
 
     } catch (error) {
        console.error('Erro detalhado:', error);
-       
        let msg = 'Erro ao criar a loja.';
        if (error.response && error.response.data) {
            if (error.response.data.message) msg += ` ${error.response.data.message}`;
@@ -107,7 +103,7 @@ const CadastrarLoja = () => {
 
         <div className="rodape-acoes">
           <button type="submit" className="btn-salvar">
-            Criar Loja
+            Criar e Continuar
           </button>
         </div>
       </form>

@@ -47,6 +47,9 @@ public class LojaModel {
     @Column(unique = true, length = 14)
     private String cnpj;
 
+    @Column(name = "img_url")
+    private String imgUrl;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default

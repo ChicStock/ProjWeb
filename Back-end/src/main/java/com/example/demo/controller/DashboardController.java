@@ -50,7 +50,7 @@ public class DashboardController {
         Double faturamento = pedidoRepository.somarFaturamentoPorLoja(lojaId);
         if (faturamento == null) faturamento = 0.0;
 
-        Long pagos = pedidoRepository.countByLojaIdAndPedidoStatus(lojaId, PedidoStatus.PAGO);
+        Long pagos = pedidoRepository.contarPedidosPagosEEntregues(lojaId);
         Long pendentes = pedidoRepository.countByLojaIdAndPedidoStatus(lojaId, PedidoStatus.PAGAMENTO_PENDENTE);
 
         List<Object[]> dadosGraficoRaw = pedidoRepository.buscarProdutosMaisVendidos(lojaId);

@@ -52,6 +52,7 @@ public class ProdutoService {
                 .imgUrl(requestDTO.getImgUrl())
                 .categoria(categoria)
                 .loja(loja)
+                .imgUrl(requestDTO.getImgUrl())
                 .status(ProdutoStatus.ATIVO)
                 .build();
 
@@ -137,7 +138,12 @@ public class ProdutoService {
             return Optional.empty();
         }
 
+
         ProdutoModel produtoExistente = optionalProduto.get();
+
+        if (updateDTO.getImgUrl() != null) {
+            produtoExistente.setImgUrl(updateDTO.getImgUrl());
+        }
 
         if (updateDTO.getCategoriaId() != null) {
             CategoriaModel categoria = categoriaRepository.findById(updateDTO.getCategoriaId())

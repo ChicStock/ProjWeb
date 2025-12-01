@@ -55,6 +55,8 @@ public class LojaService {
         loja.setEntrega(requestDTO.getEntrega());
         loja.setPagamento(requestDTO.getPagamento());
 
+        loja.setImgUrl(requestDTO.getImgUrl());
+
         loja.setStatusLoja(StatusLoja.ATIVO);
         loja.setUsuario(usuario);
 
@@ -89,6 +91,9 @@ public class LojaService {
             if (requestDTO.getCnpj() != null) loja.setCnpj(requestDTO.getCnpj());
             if (requestDTO.getEntrega() != null) loja.setEntrega(requestDTO.getEntrega());
             if (requestDTO.getPagamento() != null) loja.setPagamento(requestDTO.getPagamento());
+            if (requestDTO.getImgUrl() != null) {
+                loja.setImgUrl(requestDTO.getImgUrl());
+            }
 
             lojaRepository.save(loja);
             return converterParaDTO(loja);
@@ -108,6 +113,7 @@ public class LojaService {
     }
 
     private LojaResponseDTO converterParaDTO(LojaModel loja) {
+
         return LojaResponseDTO.builder()
                 .id(loja.getId())
                 .nome(loja.getNome())
@@ -117,7 +123,8 @@ public class LojaService {
                 .cnpj(loja.getCnpj())
                 .entrega(loja.getEntrega())
                 .pagamento(loja.getPagamento())
-                .status(loja.getStatusLoja())
+                .statusLoja(loja.getStatusLoja())
+                .imgUrl(loja.getImgUrl())
                 .createdAt(loja.getCreatedAt())
                 .updatedAt(loja.getUpdatedAt())
                 .totalProdutos(lojaRepository.countProdutosByLojaId(loja.getId()))

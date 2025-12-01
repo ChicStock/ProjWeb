@@ -3,7 +3,9 @@ import Navbar from "./Navbar";
 import "./MeusPedidos.css";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { FiArrowLeft, FiBox, FiTruck, FiCheckCircle, FiClock, FiShoppingBag, FiChevronRight, FiXCircle } from "react-icons/fi";
+import { FiArrowLeft, FiBox, FiTruck, FiCheckCircle, FiClock, FiShoppingBag, FiXCircle } from "react-icons/fi";
+
+const API_URL = "http://localhost:8080";
 
 function MeusPedidos() {
   const [pedidos, setPedidos] = useState([]);
@@ -19,7 +21,7 @@ function MeusPedidos() {
         }
 
         try {
-            const response = await axios.get('http://localhost:8080/api/v1/pedidos/meus-pedidos', {
+            const response = await axios.get(`${API_URL}/api/v1/pedidos/meus-pedidos`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setPedidos(response.data);
@@ -40,9 +42,11 @@ function MeusPedidos() {
           case 'PAGO': return { class: 'status-blue', icon: <FiTruck />, label: 'A Caminho' };
           case 'PAGAMENTO_PENDENTE': return { class: 'status-yellow', icon: <FiClock />, label: 'Aguardando Pagamento' };
           case 'CARRINHO': return { class: 'status-yellow', icon: <FiShoppingBag />, label: 'Em Aberto' };
+          case 'CANCELADO': return { class: 'status-red', icon: <FiXCircle />, label: 'Cancelado' };
           default: return { class: 'status-yellow', icon: <FiClock />, label: status };
       }
   };
+
   const formatarData = (dataIso) => {
       if (!dataIso) return "";
       return new Date(dataIso).toLocaleDateString('pt-BR');
@@ -103,7 +107,12 @@ function MeusPedidos() {
                                     <div key={idx} className="item-row">
                                         <div className="item-thumb">
                                             {item.imgUrl && !item.imgUrl.includes('placeholder') ? 
-                                                <img src={item.imgUrl} alt={item.nome} /> : 
+                                                <img 
+                                                    src={`${API_URL}${item.imgUrl}`} 
+                                                    alt={item.nome} 
+                                                    onError={(e) => { e.target.style.display = 'none'; }} 
+                                                /> 
+                                                : 
                                                 <FiBox />
                                             }
                                         </div>
@@ -123,9 +132,7 @@ function MeusPedidos() {
                                 <span>Total do Pedido:</span>
                                 <strong>{formatarPreco(pedido.valorTotal)}</strong>
                             </div>
-                            <button className="btn-detalhes">
-                                Ver Detalhes <FiChevronRight />
-                            </button>
+
                         </div>
                     </div>
                 )

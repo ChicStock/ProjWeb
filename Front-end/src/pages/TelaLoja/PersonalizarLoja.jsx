@@ -5,6 +5,8 @@ import { FiEdit2, FiCheck, FiCamera, FiImage } from 'react-icons/fi';
 import logosite from '../../assets/logo1.png';
 import axios from 'axios'; 
 
+const API_URL = "http://localhost:8080"; // URL do seu Backend
+
 const PersonalizarLoja = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -24,13 +26,14 @@ const PersonalizarLoja = () => {
 
   const [editando, setEditando] = useState(null);
   const [fotoPreview, setFotoPreview] = useState(null); 
+  const [fotoArquivo, setFotoArquivo] = useState(null); // Guarda o arquivo File real
   const fileInputRef = useRef(null);
 
   useEffect(() => {
     const fetchLojaData = async () => {
       const token = localStorage.getItem('authToken');
       try {
-          const response = await axios.get(`http://localhost:8080/api/v1/lojas/${id}`, {
+          const response = await axios.get(`${API_URL}/api/v1/lojas/${id}`, {
             headers: { Authorization: `Bearer ${token}` }
           });
           
@@ -45,6 +48,10 @@ const PersonalizarLoja = () => {
              entrega: dados.entrega || opcoesEntrega[0], 
              pagamento: dados.pagamento || ''
           });
+
+          if (dados.imgUrl) {
+              setFotoPreview(`${API_URL}${dados.imgUrl}`);
+          }
           
       } catch (error) {
           console.error("Erro ao buscar loja", error);
@@ -73,12 +80,29 @@ const PersonalizarLoja = () => {
     e.preventDefault();
     const token = localStorage.getItem('authToken');
 
+    const formData = new FormData();
+
+    formData.append("nome", lojaData.nome);
+    formData.append("descricao", lojaData.descricao);
+    formData.append("endereco", lojaData.endereco);
+    formData.append("telefone", lojaData.telefone);
+    formData.append("cnpj", lojaData.cnpj);
+    formData.append("entrega", lojaData.entrega);
+    formData.append("pagamento", lojaData.pagamento);
+
+    if (fotoArquivo) {
+        formData.append("imagem", fotoArquivo);
+    }
+
     try {
-      await axios.put(`http://localhost:8080/api/v1/lojas/${id}`, lojaData, {
-         headers: { Authorization: `Bearer ${token}` }
+      await axios.put(`${API_URL}/api/v1/lojas/${id}`, formData, {
+         headers: { 
+             Authorization: `Bearer ${token}`,
+             "Content-Type": "multipart/form-data"
+         }
       });
       
-      alert('Loja salva com sucesso!');
+      alert('Loja atualizada com sucesso!');
       navigate('/RelatorioVendas');
 
     } catch (error) {
@@ -95,6 +119,7 @@ const PersonalizarLoja = () => {
   const handleFotoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setFotoArquivo(file);
       setFotoPreview(URL.createObjectURL(file));
     }
   };

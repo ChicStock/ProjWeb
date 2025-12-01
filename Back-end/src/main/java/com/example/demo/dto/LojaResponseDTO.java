@@ -17,8 +17,9 @@ public class LojaResponseDTO {
     private String cnpj;
     private String entrega;
     private String pagamento;
-    private StatusLoja status;
+    private StatusLoja statusLoja;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Integer totalProdutos;
+    private String imgUrl;
 }
